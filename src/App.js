@@ -1,24 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import {React, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {  Route, Routes } from "react-router-dom";
+import HomePage from "./Components/Pages/HomePage";
+import { ThemeContext } from "./Components/Contexts/ThemeContext";
+import { UserContextProvider } from "./Components/Contexts/UserContext";
+import WelcomePage from "./Components/Pages/WelcomePage";
+import UploadMedia from "./Components/Pages/UploadMedia";
+import PageHeader from "./Components/HeaderComponent/PageHeader";
 
 function App() {
+  const navigate = useNavigate();
+  let [darkMode, setDarkMode] = useState(false);
+  let [authenticatedUser, setAuthenticatedUser] = useState(null);
+  function toggleTheme(){
+    darkMode?setDarkMode(false):setDarkMode(true);
+    console.log("Dark mode changed to "+darkMode);
+  }
+  function toggleLogin(value=null){
+  
+    if(authenticatedUser!==null){
+      setAuthenticatedUser(null);
+      navigate('/');
+    }else{
+      setAuthenticatedUser(value);
+    }
+  }
   return (
+    <ThemeContext.Provider value={{darkMode,toggleTheme}}>
+      <UserContextProvider>
+      <PageHeader/>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Routes>
+        <Route exact path="/" element={<WelcomePage/>}/>
+        <Route exact path="/home" element={<HomePage/>}/>
+        {/* <Route exact path="/profile" element={<Profile/>}/>
+        <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
+        <Route exact path="/UploadMedia" element={<UploadMedia/>}/>
+
+      </Routes>
     </div>
+    </UserContextProvider>
+    </ThemeContext.Provider>
   );
 }
 

@@ -1,0 +1,6 @@
+.invalid-tooltip {
+    visibility: hidden;
+}
+.form-control:hover ~ .invalid-tooltip {
+    visibility: visible;
+}
