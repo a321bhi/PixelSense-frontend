@@ -1,4 +1,5 @@
-import { useContext, useRef } from 'react';
+import {  useRef } from 'react';
+import './InputArea.module.css';
 function InputArea(){
     let chatMessageHandler = useRef();
     function sendMessage(event){
@@ -20,10 +21,9 @@ function InputArea(){
         //    );
        
     }
-
-    <div className="shadow col-3 pt-5 container card p-5 mt-5 h-75">
-    <form action="" className="">
-        <div className="my-3 form-floating mx-auto">
+return <div className="">
+    <form action="" className="chatInputForm container-fluid d-flex">
+        <div className="my-1 form-floating mx-auto w-100">
             <input 
                 type="text" 
                 className="form-control" 
@@ -34,8 +34,8 @@ function InputArea(){
                 required/>
             <label htmlFor="chatmessage" >Enter your message</label>
         </div>
-        <div className="my-3 form-check mx-auto text-center">
-            <button type="Submit" className="btn btn-primary w-50" onClick={sendMessage}>Send</button>
+        <div className="my-1 form-check mx-auto text-center">
+            <button type="Submit" className="btn btn-primary w-100 h-100" onClick={sendMessage}>Send</button>
         </div>
     </form>
     </div>
