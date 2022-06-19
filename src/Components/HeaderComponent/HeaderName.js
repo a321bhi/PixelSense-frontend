@@ -1,7 +1,7 @@
 function HeaderName(){
 return(
-<div className="container-fluid p-3 text-center text-white bg-primary d-inline-flex">
-<h1 className="w-75 mx-auto" >
+<div >
+<h1 className="w-75 mx-auto  p-3 text-center " >
 PixelSense
 </h1>
 

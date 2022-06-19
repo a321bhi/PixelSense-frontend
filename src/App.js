@@ -4,6 +4,7 @@ import {  Route, Routes } from "react-router-dom";
 import HomePage from "./Components/Pages/HomePage";
 import { ThemeContext } from "./Components/Contexts/ThemeContext";
 import { UserContextProvider } from "./Components/Contexts/UserContext";
+import ActiveChats from "./Components/Pages/ActiveChatsPage";
 import WelcomePage from "./Components/Pages/WelcomePage";
 import UploadMedia from "./Components/Pages/UploadMedia";
 import PageHeader from "./Components/HeaderComponent/PageHeader";
@@ -36,6 +37,7 @@ function App() {
         {/* <Route exact path="/profile" element={<Profile/>}/>
         <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
         <Route exact path="/UploadMedia" element={<UploadMedia/>}/>
+        <Route exact path="/chats" element={<ActiveChats/>}/>
 
       </Routes>
     </div>

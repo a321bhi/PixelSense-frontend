@@ -1,6 +1,8 @@
 .imgclass{
-    width: 30% !important;
     margin-left: auto;
     margin-right: auto;
     height: 30vh;
+    width: 100%;
+    
+    object-fit: cover;
 }
