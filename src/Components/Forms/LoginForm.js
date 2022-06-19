@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useContext, useRef } from 'react';
 import UserContext from '../Contexts/UserContext';
 import RegistrationForm from "./RegistrationForm";
-
+import axios from 'axios';
 
 function LoginForm(){
 
@@ -10,11 +10,25 @@ const navigate = useNavigate();
 
 let userCtx = useContext(UserContext);
 let usernameHandler = useRef();
+let passwordHandler = useRef();
     function loginFunction(event){
         event.preventDefault();
-
-        userCtx.toggleLogin(usernameHandler.current.value);
-        navigate('/home');   
+        const username = usernameHandler.current.value;
+        const password = passwordHandler.current.value;
+        const user = {
+            'userName':username,
+            'password':password
+          }
+        axios.post('/user/login', user).then(
+            response=>{
+              if(response.status===200){
+               console.log("login successful");
+               userCtx.toggleLogin(usernameHandler.current.value);
+               navigate('/home');   
+              }
+            } 
+           );
+       
     }
 return (
     <div>
@@ -22,11 +36,25 @@ return (
     <form action="" className="">
         <div className="text-center display-6">Login</div>
         <div className="my-3 form-floating  mx-auto">
-            <input type="email" className="form-control" id="loginemail" placeholder="Enter email" name="loginemail" ref={usernameHandler} required/>
-            <label htmlFor="loginemail">Email</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="loginUsername" 
+                placeholder="Enter username" 
+                name="username" 
+                ref={usernameHandler} 
+                required/>
+            <label htmlFor="username">Username</label>
         </div>
         <div className="my-3 form-floating mx-auto">
-            <input type="password" className="form-control" id="loginpwd" placeholder="Enter password" name="loginpwd" required/>
+            <input 
+                type="password" 
+                className="form-control" 
+                id="loginpwd" 
+                placeholder="Enter password" 
+                name="loginpwd" 
+                ref={passwordHandler} 
+                required/>
             <label htmlFor="loginpwd" >Password</label>
         </div>
         <div className="my-3 form-check mx-auto w-75 ">

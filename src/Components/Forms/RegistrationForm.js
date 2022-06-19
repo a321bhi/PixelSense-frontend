@@ -1,4 +1,4 @@
-import axios, { Axios } from "axios";
+import axios from "axios";
 import {  useRef,useState } from "react";
 import './RegistrationFormStyle.css';
 
@@ -32,7 +32,7 @@ function RegistrationForm(){
   function checkUsername(){
     
     if(usernameHandle.current.value!==""){
-    axios.get('/user/'+usernameHandle.current.value)
+    axios.get('/user/check/'+usernameHandle.current.value)
     .then(response=>{
       setUsernameConflict(response.data);
 
@@ -44,16 +44,19 @@ function RegistrationForm(){
     
     const fullName =fullNameHandle.current.value;
     const email = emailHandle.current.value;
+    const password = passwordHandle.current.value;
     const username = usernameHandle.current.value;
     const countryCode = countryCodeHandle.current.value;
     const phone = phoneHandle.current.value;
     const dateOfBirth = dateOfBirthHandle.current.value;
-    const password = passwordHandle.current.value;
     const confirmPassword = confirmPasswordHandle.current.value;
 
-    if(fullName===""||email===""||username===""||countryCode===""||phone===""||dateOfBirth===""||password===""||confirmPassword===""){
+    var formInputs = [fullNameHandle,
+                      emailHandle,passwordHandle,usernameHandle,
+                      countryCodeHandle,phoneHandle,dateOfBirthHandle,confirmPasswordHandle];
+    //if(fullName===""||email===""||username===""||countryCode===""||phone===""||dateOfBirth===""||password===""||confirmPassword===""){
+    if(formInputs.some(forInput => forInput==="")){
       toggleValidationState();
-
     }
     else if(confirmPassword!==password){
       setPasswordsNotMatching(true);
@@ -73,6 +76,9 @@ function RegistrationForm(){
        response=>{
          if(response.status===200){
           console.log("User added successfully");
+          formInputs.forEach(formInput =>{
+            formInput.current.value="";
+          });
          }
        } 
       );
