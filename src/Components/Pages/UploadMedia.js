@@ -50,7 +50,7 @@ function UploadMedia() {
                 <button >
                   Upload!
                 </button><br/>
-                <img src={imgUrl} width={"50%;"} height={"50%;"}/>
+                <img alt={"image"} src={imgUrl} width={"50%;"} height={"50%;"}/>
             </div>
           {fileData()}
         </div>

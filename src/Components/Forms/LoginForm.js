@@ -32,7 +32,7 @@ let passwordHandler = useRef();
     }
 return (
     <div>
-    <div className="shadow col-3 pt-5 container card p-5 mt-5 h-75">
+    <div className="shadow col-10 pt-5 container card p-5 mt-5 h-75 col-lg-4">
     <form action="" className="">
         <div className="text-center display-6">Login</div>
         <div className="my-3 form-floating  mx-auto">
@@ -64,7 +64,7 @@ return (
             </label>
         </div>
         <div className="my-3 form-check mx-auto text-center">
-            <button type="Submit" className="btn btn-primary w-50" onClick={loginFunction}>Login</button>
+            <button type="Submit" className="btn btn-primary w-75 " onClick={loginFunction}>Login</button>
         </div>
     </form>
     <div className="text-center">Don't have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Sign up</a></div>

@@ -8,7 +8,7 @@ return (
               </div>
               <div className="card-body">
                 <h5 className="card-title">Title, Location</h5>
-                <img className="imgclass" src={props.source}/>
+                <img className="imgclass" src={props.source} role="button" onClick={()=>props.showImageModal(props.source)}/>
               </div>
               <div className="card-footer text-muted">
                 Posted by 

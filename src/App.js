@@ -8,7 +8,7 @@ import ActiveChats from "./Components/Pages/ActiveChatsPage";
 import WelcomePage from "./Components/Pages/WelcomePage";
 import UploadMedia from "./Components/Pages/UploadMedia";
 import PageHeader from "./Components/HeaderComponent/PageHeader";
-
+import ChatPage from "./Components/Pages/ChatPage";
 function App() {
   const navigate = useNavigate();
   let [darkMode, setDarkMode] = useState(false);
@@ -38,7 +38,7 @@ function App() {
         <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
         <Route exact path="/UploadMedia" element={<UploadMedia/>}/>
         <Route exact path="/chats" element={<ActiveChats/>}/>
-
+        <Route exact path="/chats/:id" element={<ChatPage/>} />
       </Routes>
     </div>
     </UserContextProvider>
