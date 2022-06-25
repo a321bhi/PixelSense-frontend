@@ -66,7 +66,7 @@ function RegistrationForm(){
       const user = {
         'fullName':fullName,
         'emailAddress':email,
-        'userName':username,
+        'username':username,
         'phoneNumber':countryCode+""+phone,
         'dateOfBirth':dateOfBirth,
         'password':password

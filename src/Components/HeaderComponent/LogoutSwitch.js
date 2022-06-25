@@ -11,10 +11,10 @@ function logoutFunction(){
     navigate('/');
 }
     return(
-    <div className="form-check form-switch bg-primary">
+    <div className="form-check form-switch">
     <div className="float-end me-3">
-    <input className="bg-dark" type="button" id="logoutSwitch" name="darkmode" onClick={logoutFunction}/>
-    <div className="" htmlFor="logoutSwitch">Logout {userCtx.username}</div>
+        <input className="bg-dark text-light" type="button" id="logoutSwitch" 
+                onClick={logoutFunction} value={`Logout ${userCtx.username}`}/>
     </div>
     </div>
 )}

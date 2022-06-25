@@ -16,7 +16,7 @@ let passwordHandler = useRef();
         const username = usernameHandler.current.value;
         const password = passwordHandler.current.value;
         const user = {
-            'userName':username,
+            'username':username,
             'password':password
           }
         axios.post('/user/login', user).then(
@@ -28,7 +28,6 @@ let passwordHandler = useRef();
               }
             } 
            );
-       
     }
 return (
     <div>

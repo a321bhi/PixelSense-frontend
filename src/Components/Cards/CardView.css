@@ -3,6 +3,8 @@
     margin-right: auto;
     height: 30vh;
     width: 100%;
-    
+    animation:opac 1.4s;
     object-fit: cover;
 }
+
+@keyframes opac{from{opacity:0} to{opacity:1}}

@@ -2,6 +2,7 @@ import CardView from "../Cards/CardView";
 import UserContext from "../Contexts/UserContext";
 import {useState, useContext } from "react";
 import ImageCardModal from "../Cards/ImageCardModal";
+import UploadMediaModal from "./UploadMediaModal";
 function HomePage(){
     const [modalShow, setModalShow] = useState(false);
     const [currentImage, setcurrentImage] = useState("");
@@ -14,7 +15,7 @@ function HomePage(){
     }
 return (<div >
     logged in as {userCtx.username}
-    <div className="row row-cols-1 row-cols-md-3 g-2 w-100">
+    <div className="row row-cols-1 row-cols-md-3 gx-2 mx-auto" style={{width:"90%"}}>
         
         {arr.length?
         arr.map(item=>{
@@ -28,6 +29,7 @@ return (<div >
                   onHide={() => setModalShow(false)}
                   source={currentImage}
     />
+    <UploadMediaModal/>
     </div>
 )
 }
