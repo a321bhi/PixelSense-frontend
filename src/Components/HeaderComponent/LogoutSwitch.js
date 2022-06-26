@@ -7,8 +7,9 @@ function LogoutSwitch(){
 
     let userCtx = useContext(UserContext);
 function logoutFunction(){
+    localStorage.clear();
     userCtx.toggleLogin("")
-    navigate('/');
+    navigate('/',{replace:true});
 }
     return(
     <div className="form-check form-switch">

@@ -9,9 +9,9 @@ import UploadMedia from "./Components/Pages/UploadMedia";
 import PageHeader from "./Components/HeaderComponent/PageHeader";
 import ChatPage from "./Components/Pages/ChatPage";
 import ProfilePage from "./Components/Pages/ProfilePage";
-function App() {
-  let userCtx = useContext(UserContext);
-  
+import AuthCheck from "./Components/AuthChecker/AuthCheck";
+import LoginPage from "./Components/Pages/LoginPage";
+function App() {  
   let [darkMode, setDarkMode] = useState(false);
   
   function toggleTheme(){
@@ -26,12 +26,13 @@ function App() {
     <div className="App">
       <Routes>
         <Route exact path="/" element={<WelcomePage/>}/>
-        <Route exact path="/home" element={<HomePage/>}/>
-        <Route exact path="/profile" element={<ProfilePage/>}/>
+        <Route exact path="/home" element={<AuthCheck><HomePage/></AuthCheck>}/>
+        <Route exact path="/login" element={<LoginPage/>}/>
+        <Route exact path="/profile" element={<AuthCheck><ProfilePage/></AuthCheck>}/>
         {/* <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
-        <Route exact path="/UploadMedia" element={<UploadMedia/>}/>
-        <Route exact path="/chats" element={<ActiveChats/>}/>
-        <Route exact path="/chats/:id" element={<ChatPage/>} />
+        <Route exact path="/UploadMedia" element={<AuthCheck><UploadMedia/></AuthCheck>}/>
+        <Route exact path="/chats" element={<AuthCheck><ActiveChats/></AuthCheck>}/>
+        <Route exact path="/chats/:id" element={<AuthCheck><ChatPage/></AuthCheck>} />
       </Routes>
     </div>
     </UserContextProvider>

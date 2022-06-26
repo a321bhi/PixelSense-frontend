@@ -4,7 +4,8 @@ import UserContext from '../Contexts/UserContext';
 import RegistrationForm from "./RegistrationForm";
 import axios from 'axios';
 
-function LoginForm(){
+
+function LoginForm(props){
 
 const navigate = useNavigate();
 
@@ -22,9 +23,12 @@ let passwordHandler = useRef();
         axios.post('/user/login', user).then(
             response=>{
               if(response.status===200){
-               console.log("login successful");
-               userCtx.toggleLogin(usernameHandler.current.value);
-               navigate('/home');   
+               console.log(response);
+               // set Cookie
+               localStorage.setItem("USERNAME", username);
+               localStorage.setItem("JWT", response.headers.authorization);
+               userCtx.toggleLogin(usernameHandler.current.value,response.headers.authorization);
+               navigate(props?.from, { replace: true });  
               }
             } 
            );
@@ -32,6 +36,7 @@ let passwordHandler = useRef();
 return (
     <div>
     <div className="shadow col-10 pt-5 container card p-5 mt-5 h-75 col-lg-4">
+{props?.fromRedirect?"Please login first":""}
     <form action="" className="">
         <div className="text-center display-6">Login</div>
         <div className="my-3 form-floating  mx-auto">

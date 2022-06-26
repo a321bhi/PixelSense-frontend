@@ -21,6 +21,7 @@ function ImageCardModal(props){
       <img alt={"image"} className="imgModal"  src={props.source?props.source:""}/>
       </Modal.Body>
       <Modal.Footer>
+        {props.currentUserImage?<Button onClick={props.deleteUserImage}>Delete</Button>:""}
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>
     </Modal>

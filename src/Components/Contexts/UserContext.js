@@ -1,26 +1,31 @@
 // Signed-in user context
-import { createContext } from "react";
 import { useState } from "react";
 import React from "react";
 export const UserContext = React.createContext({
     username: "",
-    toggleLogin: ()=>{}
+    token:"",
+    toggleLogin: ()=>{},
+    setUsername:()=>{},
+    setToken:()=>{}
   });
-
-
   function UserContextProvider(props){
-    const [usernameState, setUsername] = useState("");
-    function toggleLoginHandler(user){
+    const [usernameState, setUsernameState] = useState("");
+    const [tokenState, setTokenState] = useState("");
+    function toggleLoginHandler(user,token){
       if(usernameState.length===0){
-        setUsername(user);
+        setUsernameState(user);
+        setTokenState(token);
       }else{
-        setUsername("");
+        setUsernameState("");
+        setTokenState("");
       }
     }
     const context={
         username:usernameState,
+        token:tokenState,
         toggleLogin:toggleLoginHandler,
-        
+        setUsername:setUsernameState,
+        setToken: setTokenState
     };
     return <UserContext.Provider value={context}>
         {props.children}

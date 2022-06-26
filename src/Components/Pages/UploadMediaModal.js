@@ -1,37 +1,33 @@
 import axios from "axios";
-import {  useRef,useState } from "react";
-
+import {  useRef,useState,useContext } from "react";
+import UserContext from "../Contexts/UserContext";
+import { baseUrl } from "../../ConfigFiles/Urls";
 function UploadMediaModal(){
+  const userCtx = useContext(UserContext);
   const modalCloseButtonHandle = useRef();
   const formHandle = useRef();
   const caption = useRef()
-  const formDataForLoading = new FormData();
-  formDataForLoading.append("mediaId","111");
-const baseUrl = "http://localhost:8090/";
   let [selectedFile, changeSelectedFile ] = useState(null);
   function onFileChange(event){
         changeSelectedFile(event.target.files[0]);
     };
   function uploadMedia(){
-    console.log(selectedFile);
       const formData = new FormData();
-      
-      formData.append("image", selectedFile);
       formData.append("mediaId","111");
+      formData.append("image", selectedFile);
       formData.append("mediaDate",new Date());
       formData.append("mediaTags",["mediaTags"]);
       formData.append("mediaCaption","mediaCaption");
-     axios.post(baseUrl+"media/add",formData,{
+     axios.post(baseUrl+"/media/add",formData,{
       headers: { 
-        "Authorization":'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmhpaml0IiwiYXV0aG9yaXRpZXMiOiJVU0VSIiwiaWF0IjoxNjU2MTgwOTM5LCJleHAiOjE2NTczMDUwMDB9.vNum1RVEv4yN7zFzRGlqNNRsER0OKoR8GqR9vv7yGd0',
+        "Authorization":userCtx.token,
         "Content-Type": 'multipart/form-data'
-        // 'Authorization': 'Bearer '+ JWTToken,
       }}).then((res) => {
           alert("File Upload success");
         })
-        .catch((err) => {alert("File Upload Error");
-      console.log(err)});
-      modalCloseButtonHandle.current.click();
+        .catch((err) => {
+      console.log(err);alert("File Upload Error");});
+      //modalCloseButtonHandle.current.click();
     };
     function fileData(){
         if (!selectedFile) {
