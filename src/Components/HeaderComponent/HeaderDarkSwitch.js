@@ -5,9 +5,9 @@ function HeaderDarkSwitch(){
     return(
         <ThemeContext.Consumer>
         {({theme, toggleTheme}) => (
-    <div className="form-check form-switch bg-primary">
+    <div className="form-check form-switch">
     <div className="float-end me-3">
-    <input className="form-check-input custom-control-input custom-checkbox bg-info" type="checkbox" id="mySwitch" name="darkmode" onClick={toggleTheme}/>
+    <input className="form-check-input custom-control-input custom-checkbox bg-warn" type="checkbox" id="mySwitch" name="darkmode" onClick={toggleTheme}/>
     <div className="form-check-label" htmlFor="mySwitch">Dark Mode</div>
     </div>
     </div>)

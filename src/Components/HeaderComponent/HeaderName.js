@@ -7,7 +7,7 @@ function HeaderName(){
 return(
 <div >
 <h1 className="w-25 mx-auto  p-3 text-center" role="button" onClick={navigateToHome} >
-PixelSense
+Pixel
 </h1>
 
 </div>

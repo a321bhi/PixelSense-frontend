@@ -3,31 +3,36 @@ import {  useRef,useState,useContext } from "react";
 import UserContext from "../Contexts/UserContext";
 import { baseUrl } from "../../ConfigFiles/Urls";
 function UploadMediaModal(){
+  const [tagsState,setTagsState] = useState([]);
   const userCtx = useContext(UserContext);
   const modalCloseButtonHandle = useRef();
   const formHandle = useRef();
-  const caption = useRef()
+  const captionHandle = useRef()
   let [selectedFile, changeSelectedFile ] = useState(null);
   function onFileChange(event){
         changeSelectedFile(event.target.files[0]);
     };
-  function uploadMedia(){
+  function uploadMedia(event){
+    event.preventDefault();
+    let captionToBeUploaded = captionHandle.current.value;
+    let tagsToBeUploaded =tagsState.map(tags=>tags.replace("#",""));
+    tagsToBeUploaded = tagsToBeUploaded?.length>0?tagsToBeUploaded:[];
       const formData = new FormData();
-      formData.append("mediaId","111");
       formData.append("image", selectedFile);
-      formData.append("mediaDate",new Date());
-      formData.append("mediaTags",["mediaTags"]);
-      formData.append("mediaCaption","mediaCaption");
+      formData.append("mediaTags",tagsToBeUploaded);
+      formData.append("mediaCaption",captionToBeUploaded);
      axios.post(baseUrl+"/media/add",formData,{
       headers: { 
         "Authorization":userCtx.token,
         "Content-Type": 'multipart/form-data'
       }}).then((res) => {
           alert("File Upload success");
+
         })
         .catch((err) => {
       console.log(err);alert("File Upload Error");});
-      //modalCloseButtonHandle.current.click();
+      modalCloseButtonHandle.current.click();
+
     };
     function fileData(){
         if (!selectedFile) {
@@ -36,6 +41,12 @@ function UploadMediaModal(){
                     <br/><h4>Choose before Pressing the Upload button</h4>
                 </div>
         );}};
+    function checkCaption(){
+      let text = captionHandle.current.value;
+      if(text.includes("#")){
+        setTagsState(text.match(/#[a-z]+\s/gi));
+      }
+    }
     return (
     <div className="modal fade" id="uploadMediaModal" aria-labelledby="registerModalLabel" aria-hidden="true">
     <div className="modal-dialog modal-lg">
@@ -57,13 +68,14 @@ function UploadMediaModal(){
                       id="caption"  
                       placeholder="Enter Caption" 
                       name="caption" 
-                    //   onChange={checkCaption}
-                      ref={caption}
+                      onChange={checkCaption}
+                      ref={captionHandle}
                       />
                     <label className="form-label" htmlFor="caption" >Caption</label>
                     <div className="invalid-tooltip">
                       Enter media caption
                     </div>
+                    <div>{tagsState?(<div> Tags Entered - <span className="text-primary">{tagsState.map(tag=>tag.trim()+" ")}</span></div>):"No tags entered"}</div>
                 </div>
       
           {fileData()}

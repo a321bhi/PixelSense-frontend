@@ -1,6 +1,5 @@
-
 import { useNavigate } from "react-router";
-
+import UploadMediaModal from "./UploadMediaModal";
 import ListGroup from 'react-bootstrap/ListGroup';
 function ActiveChats() {
   const navigate = useNavigate();
@@ -27,6 +26,7 @@ function ActiveChats() {
             }
           </ListGroup>
       }
+      <UploadMediaModal/>
   </div>
   ;
 }

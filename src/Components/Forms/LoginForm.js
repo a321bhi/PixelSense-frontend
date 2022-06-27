@@ -36,7 +36,7 @@ let passwordHandler = useRef();
 return (
     <div>
     <div className="shadow col-10 pt-5 container card p-5 mt-5 h-75 col-lg-4">
-{props?.fromRedirect?"Please login first":""}
+{props?.fromRedirect?<div className='text-danger fs-5 text-center mb-2'>Please login first</div>:""}
     <form action="" className="">
         <div className="text-center display-6">Login</div>
         <div className="my-3 form-floating  mx-auto">

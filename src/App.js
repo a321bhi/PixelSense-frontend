@@ -11,6 +11,7 @@ import ChatPage from "./Components/Pages/ChatPage";
 import ProfilePage from "./Components/Pages/ProfilePage";
 import AuthCheck from "./Components/AuthChecker/AuthCheck";
 import LoginPage from "./Components/Pages/LoginPage";
+import LoginCheck from "./Components/AuthChecker/LoginCheck";
 function App() {  
   let [darkMode, setDarkMode] = useState(false);
   
@@ -25,9 +26,10 @@ function App() {
       <PageHeader/>
     <div className="App">
       <Routes>
-        <Route exact path="/" element={<WelcomePage/>}/>
+        <Route exact path="/" element={<LoginCheck><WelcomePage/></LoginCheck>}/>
+        <Route exact path="/login" element={<LoginCheck><LoginPage/></LoginCheck>}/>
+        
         <Route exact path="/home" element={<AuthCheck><HomePage/></AuthCheck>}/>
-        <Route exact path="/login" element={<LoginPage/>}/>
         <Route exact path="/profile" element={<AuthCheck><ProfilePage/></AuthCheck>}/>
         {/* <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
         <Route exact path="/UploadMedia" element={<AuthCheck><UploadMedia/></AuthCheck>}/>
