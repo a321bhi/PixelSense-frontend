@@ -1,0 +1,20 @@
+.imgModal{
+    height:100% ;
+    width: 100%;
+    object-fit: contain;
+}
+.custom-image-div {
+    
+    min-width:60%;
+}
+.custom-comments-div {
+    min-width: 38%;
+}
+@media only screen and (max-width: 768px){
+    .custom-image-div {
+        min-width:"100%"
+    }
+    .custom-comments-div {
+        min-width:"100%"
+    }
+}

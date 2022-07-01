@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { ThemeContext } from '../Contexts/ThemeContext';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faCircleHalfStroke} from "@fortawesome/free-solid-svg-icons";
 function HeaderDarkSwitch(){
+    const themeCtx = useContext(ThemeContext);
     return(
-        <ThemeContext.Consumer>
-        {({theme, toggleTheme}) => (
     <div className="form-check form-switch">
     <div className="float-end me-3">
-    <input className="form-check-input custom-control-input custom-checkbox bg-warn" type="checkbox" id="mySwitch" name="darkmode" onClick={toggleTheme}/>
-    <div className="form-check-label" htmlFor="mySwitch">Dark Mode</div>
+    <input className="form-check-input custom-control-input custom-checkbox bg-warn" type="checkbox" id="mySwitch" name="darkmode" onChange={()=>themeCtx.toggleDarkMode()}/>
+    <div className="form-check-label" htmlFor="mySwitch"><FontAwesomeIcon icon={faCircleHalfStroke} size="2x"/></div>
     </div>
     </div>)
-    }
-    </ThemeContext.Consumer>
-)}
+}
 
 export default HeaderDarkSwitch;

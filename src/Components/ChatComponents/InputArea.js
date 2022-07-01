@@ -1,28 +1,32 @@
-import {  useRef } from 'react';
+import {  useRef,useContext,useState } from 'react';
 import './InputArea.module.css';
-function InputArea(){
-    let chatMessageHandler = useRef();
-    function sendMessage(event){
-        event.preventDefault();
+import UserContext from '../Contexts/UserContext';
 
-        const message = chatMessageHandler.current.value;
-        // const user = {
-        //     'userName':username,
-        //     'password':password
-        //   }
-        // axios.post('/user/login', user).then(
-        //     response=>{
-        //       if(response.status===200){
-        //        console.log("login successful");
-        //        userCtx.toggleLogin(usernameHandler.current.value);
-        //        navigate('/home');   
-        //       }
-        //     } 
-        //    );
-       
+import Picker from 'emoji-picker-react';
+
+function InputArea(props){
+    let chatMessageHandler = useRef();
+    let userCtx = useContext(UserContext);
+//     const [chosenEmoji, setChosenEmoji] = useState(null);
+
+//   const onEmojiClick = (event, emojiObject) => {
+//     chatMessageHandler.current.value+=emojiObject
+//   };
+  const sendMessage=()=> {
+    if(chatMessageHandler.current.value.length>0){
+    userCtx.stompClient.send( "/app/chat/"+props.usernameTo, {}, JSON.stringify({
+      'message': chatMessageHandler.current.value,
+      'usernameFrom':userCtx.username,
+      'usernameTo':props.usernameTo,
+      'timeSent':new Date(),
+    }));
+    chatMessageHandler.current.value="";
     }
+    props.callRefresh();
+}
 return <div className="">
-    <form action="" className="chatInputForm container-fluid d-flex">
+    <div  className="chatInputForm d-flex">
+    {/* <Picker onEmojiClick={onEmojiClick} disableAutoFocus={true}   pickerStyle={{ overflow:'visible',position:"fixed"}} /> */}
         <div className="my-1 form-floating mx-auto w-100">
             <input 
                 type="text" 
@@ -31,13 +35,14 @@ return <div className="">
                 placeholder="Enter your message.." 
                 name="message" 
                 ref={chatMessageHandler} 
-                required/>
+                />
             <label htmlFor="chatmessage" >Enter your message</label>
         </div>
         <div className="my-1 form-check mx-auto text-center">
-            <button type="Submit" className="btn btn-primary w-100 h-100" onClick={sendMessage}>Send</button>
+
+            <button type="button" className="btn btn-primary w-100 h-100" onClick={sendMessage}>Send</button>
         </div>
-    </form>
+    </div>
     </div>
 }
 

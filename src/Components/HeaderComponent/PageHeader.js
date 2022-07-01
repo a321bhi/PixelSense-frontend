@@ -7,7 +7,7 @@ function PageHeader(){
     let userCtx = useContext(UserContext);
 
 return(
-    <div className="container-fluid text-white bg-primary">
+    <div className="container-fluid d-flex">
         <HeaderName/>
         {userCtx.username.length!==0?
         <NavbarComponent/>

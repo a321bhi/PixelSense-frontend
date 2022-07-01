@@ -1,51 +1,57 @@
-import Modal from 'react-bootstrap/Modal';
+<!-- import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
 import ModalDialog from 'react-bootstrap/ModalDialog'
 import React from 'react';
 import { useRef } from 'react';
-import './ImageCardModal.css';
+import './ImageModal.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart  as faHeartSolid} from '@fortawesome/free-solid-svg-icons';
 import UserContext from '../Contexts/UserContext';
 import { useContext } from 'react';
-function ImageCardModal(props){
+function ImageModal(props){
+
 let userCtx = useContext(UserContext);
   const newCommentHandle = useRef()
   // let element= document.getElementsByClassName('.modal-backdrop')
-   return props.show?<Modal
+   return props.showModal?<Modal
    size="xl"
-        show={props.show}
+        show={props.showModal}
+        onHide={props.handleClose}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <ModalDialog size="xl" scrollable={true} >
-      <Modal.Header>
+      <ModalDialog size="xl" >
+      <Modal.Header style={{width:"100%"}}>
         <Modal.Title id="contained-modal-title-vcenter">
             Title, Location
         </Modal.Title>
-        {/* <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={props.onHide}/> */}
-        <button type="button" className="btn-close" aria-label="Close" ref={props.closeRef} onClick={props.onHide}/>
+        <button type="button" className="btn-close" aria-label="Close" onClick={props.handleClose}/>
       </Modal.Header>
-      <Modal.Body style={{height:"70vh"}}> 
+      <Modal.Body style={{height:"70vh",width:"100%"}}> 
       {/* Dont forget to re3place below lines */}
       {/* <img alt={"image"} className="imgModal"  src={props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:""}/> */}
       <img alt={"image"} className="imgModal"  src={props.local?props.imageData.imageAsBase64:(props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:"")}/>
       </Modal.Body>
       <Modal.Footer className='d-block fs-5'>
+        {props.imageData.mediaCaption?props.imageData.mediaCaption:""}
+        {props.imageData.mediaDate?props.imageData.mediaDate:""}
+        {props.imageData.mediaTags?props.imageData.mediaTags:""}
         {(props.imageData.likedBy?.includes(userCtx.username))?
           <FontAwesomeIcon icon={faHeartSolid} onClick={()=>props.unlikeImage(props.imageData.mediaId)} size="2x"/>
           :<FontAwesomeIcon icon={faHeart} onClick={()=>props.likeImage(props.imageData.mediaId)} size="2x"/>
         }
        {props.imageData.likedBy?.length+" likes"}
         <div className='float-end'>
-          {props.currentUserImage?<Button onClick={()=>props.deleteUserImage(props.imageData.mediaId)}>Delete</Button>:""}
-          <Button onClick={props.onHide}>Close</Button>
+          {props.currentUser?<Button onClick={()=>props.deleteUserImage(props.imageData.mediaId)}>Delete</Button>:""}
+          <Button onClick={props.handleClose}>Close</Button>
         </div>
         <div className='d-block'>
           <div className='display-5'>Comments</div>
           <div className='overflow-auto' style={{maxHeight:"500px"}}>
-          {[1,1,1,1,1,1,,1,1,1,1,1,1,1,1,1,1,,1,1,1,1,1,1,1,1,1,1,,1,1,1,1].map(item=><div>Hello</div>)}
+          {props.imageData.mediaComments?.length>0?
+          props.imageData.mediaComments.map((item)=><div>{item}</div>)
+          :""}
           </div>
           <form action="" className="">
         <div className="my-3 form-floating  mx-auto">
@@ -67,4 +73,4 @@ let userCtx = useContext(UserContext);
     </Modal>:""
 }
 
-export default ImageCardModal;
+export default ImageModal; -->

@@ -6,8 +6,9 @@ function HeaderName(){
     }
 return(
 <div >
-<h1 className="w-25 mx-auto  p-3 text-center" role="button" onClick={navigateToHome} >
-Pixel
+<h1 className="p-1 text-center fs-1 my-3 ms-4 fst-italic rounded " role="button" onClick={navigateToHome} 
+style={{width:"15vw",fontFamily:"Dancing Script, cursive",fontWeight:"bold"}}>
+Pixels
 </h1>
 
 </div>

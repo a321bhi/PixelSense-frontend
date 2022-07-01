@@ -1,22 +1,20 @@
+import MiniUserCard from "../Cards/MiniUserCard";
 import ChatMessageBubble from "../ChatComponents/ChatMessageBubble";
 import InputArea from "../ChatComponents/InputArea";
-import classes from './ChatPage.module.css';
-import {useParams} from "react-router-dom";
-function ChatPage() {
-  var classesForCard = "card w-75 mx-auto mt-5 "+classes.chat;
-  let { id } = useParams();
-  console.log(id);
+function ChatPage(props) {
   return (
-    <div className={classesForCard}>
-      <div className="card-header">  {id}</div>
+    <div className="card w-100" style={{height:"75vh"}}>
+      <div className="card-header"><MiniUserCard username={props.user}/></div>
       <div className="card-body overflow-auto" >
-      <ul class="list-group w-100 d-flex ">
-        <ChatMessageBubble from={"sender"}/>
-        <ChatMessageBubble from={"self"}/>
+      <ul className="list-group w-100 d-flex ">
+        {props.message?.map(msg=>{
+           return <ChatMessageBubble message={msg} usernameTo={props.user} />
+        })
+        }
         </ul>
       </div>
       <div className="card-footer">
-        <InputArea />
+        <InputArea  callRefresh={props.callRefresh} usernameTo={props.user} />
       </div>
     </div>
   );

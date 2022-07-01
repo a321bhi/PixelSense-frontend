@@ -1,5 +1,6 @@
 import axios from "axios";
 import {  useRef,useState } from "react";
+import { baseUrl } from "../../ConfigFiles/Urls";
 import './RegistrationFormStyle.css';
 
 
@@ -72,10 +73,11 @@ function RegistrationForm(){
         'password':password
 
       }
-      axios.post('/user/register', user).then(
+      axios.post(baseUrl+'/user/register', user).then(
        response=>{
          if(response.status===200){
           console.log("User added successfully");
+          alert("User added successfully!");
           formInputs.forEach(formInput =>{
             formInput.current.value="";
           });

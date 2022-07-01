@@ -1,39 +1,81 @@
-import CardView from "../Cards/CardView";
-import ImageCardModal from "../Cards/ImageCardModal";
 import { useState, useContext, useEffect } from "react";
 import UserContext from "../Contexts/UserContext";
 import UploadMediaModal from "./UploadMediaModal";
 import {baseUrl} from '../../ConfigFiles/Urls';
-import { useRef } from "react";
 import axios from "axios";
 import NoProfileMedia from "../UXMessages/NoProfileMedia";
+import CardAndModal from "../Cards/CardAndModal";
+import UserCard from "../Cards/UserCard";
+import { useParams } from "react-router-dom";
+import NoMedia from "../UXMessages/NoMedia";
 function ProfilePage(){
-    const [modalShow, setModalShow] = useState(false);
-    const [currentImage, setcurrentImage] = useState("");
-    const [arr, setArr] = useState([]);
-    const modalCloseButtonHandle = useRef();
-    let userCtx = useContext(UserContext);
-useEffect(()=>{
-  if(modalShow){
-    const currentMediaId = currentImage.mediaId;
-    const updatedData = arr.filter(item=>item.mediaId===currentMediaId)[0];
-   setcurrentImage(updatedData);
+
+  let { id } = useParams();
+  let userCtx = useContext(UserContext);
+  const [profileLoaded,setProfileLoaded] = useState(false);
+  const [mediaLoaded,setMediaLoaded] = useState(false);
+
+  function determineCurrentUser(){
+     let decision = id?true:false;
+     if(decision){
+        if(id===userCtx.username){
+          return true;
+        }else{
+          return false;
+        }
+     }else{
+        return true;
+     }
   }
-},[arr]);
-    function showImageModal(item){
-        setcurrentImage(item);
-        setModalShow(true);
-    }
-    let getImages = async () => {
-        await axios.get( baseUrl+"/media/getAll",
+  const [currentUser,setCurrentUser] = useState(determineCurrentUser())
+    const [userProfile, setUserProfile] = useState({});
+    const [arr, setArr] = useState([]);
+   
+    const getImages = async () => {
+      let formData = new FormData();
+      formData.append("username",currentUser?userCtx.username:id);
+    
+       await axios.post(baseUrl+"/media/getAll",formData,
         {
             headers: { 
               "Authorization":userCtx.token
             }
         },
-        ).then(response=>{setArr(response.data);}).catch(err=>console.log(err))
+        ).then(
+          response=>{
+          
+            response.data.map(media=>{
+              media.mediaComments.map(row=>{
+                var date = new Date(row.createdAt);
+                row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
+                return row;
+              })
+              media.mediaComments.sort((row1,row2)=>{
+                var date1 = new Date(row1.createdAt);
+                var date2 = new Date(row2.createdAt);
+                return date1.getTime()-date2.getTime();
+              });
+              return media;
+            })
+            setArr(response.data);
+          setMediaLoaded(true);
+        }).catch(err=>console.log(err))
       };
-      let deleteImage = async (mediaId) => {
+      
+      const fetchProfile = ()=>{
+        axios.get(baseUrl+"/user/getUser/"+(currentUser?userCtx.username:id),
+            {
+              headers: { 
+                "Authorization":userCtx.token
+              }
+            },).then(response=>{
+              setUserProfile(response.data);
+              setProfileLoaded(true);
+              userCtx.setUserProfile(response.data);
+            })
+            .catch(err=>console.log(err));
+      }
+      const deleteImage = async (mediaId) => {
         var bodyFormData = new FormData();
         bodyFormData.append('mediaId', mediaId);
         await axios.post( baseUrl+"/media/deleteOneMedia",
@@ -43,13 +85,12 @@ useEffect(()=>{
               "Authorization":userCtx.token
             }
         },
-        ).then(response=>{console.log("Deleted successfully");
-        modalCloseButtonHandle.current.click();
+        ).then(response=>{("Deleted successfully");
         alert("Deleted successfully")
-      }).catch(err=>console.log(err));
+      }).catch(err=>(err));
       getImages();
       };
-      let unlikeImage = async (mediaId) => {
+      const unlikeImage = async (mediaId) => {
         var bodyFormData = new FormData();
         bodyFormData.append('mediaId', mediaId);
         await axios.post(baseUrl+"/media/unlikeMedia",
@@ -59,9 +100,9 @@ useEffect(()=>{
               "Authorization":userCtx.token
             }
         },
-        ).then(response=>{getImages();}).catch(err=>console.log(err));
+        ).then(response=>{getImages();}).catch(err=>(err));
       };
-      let likeImage = async (mediaId) => {
+      const likeImage = async (mediaId) => {
         var bodyFormData = new FormData();
         bodyFormData.append('mediaId', mediaId);
         await axios.post( baseUrl+"/media/likeMedia",
@@ -71,36 +112,45 @@ useEffect(()=>{
               "Authorization":userCtx.token
             }
         },
-        ).then(response=>{getImages();}).catch(err=>console.log(err));
+        ).then(response=>{getImages();}).catch(err=>(err));
       };
       useEffect(()=>{
+        fetchProfile();
         getImages();
-      },[])
-return <div className="w-100">
+      },[]);
+      useEffect(()=>{
+      },[profileLoaded])
+      // useEffect(()=>{
+      //     fetchProfile();
+      //     getImages();
+      //   },[]);
+return <div className="mx-auto" style={{width:"85%"}}>
+{profileLoaded&&
+  <UserCard  
+    mediaCount={arr.length} 
+    fetchProfile={fetchProfile}
+    currentUser={currentUser}
+    userProfile={userProfile}
+    />
+    }
 <div className="row row-cols-1 row-cols-md-3 gx-2 mx-auto" style={{width:"90%"}}>
-    {arr.length?
+    {(mediaLoaded&&arr.length>0)?
     arr.map((item,key)=>{
-        return (<CardView 
-              currentUserImage={true} key={key} 
-              imageData={item} 
-              showImageModal={()=>showImageModal(item)}
-              likeImage={likeImage}
-              unlikeImage={unlikeImage}
-              />)
-})
-    :<NoProfileMedia/>
-}
+        return (<CardAndModal 
+                  currentUser={currentUser} 
+                  num={key}
+                  key={key} 
+                  imageData={item}
+                  profilePage={true}
+                  deleteImage={deleteImage}
+                  likeImage={likeImage} 
+                  unlikeImage={unlikeImage}
+                  fetchProfile={getImages}
+                />)})
+    :currentUser?<NoProfileMedia/>:<NoMedia/>}
 </div>
-{modalShow?<ImageCardModal
-      closeRef={modalCloseButtonHandle}
-              currentUserImage={true} 
-              deleteUserImage={deleteImage}
-              show={modalShow}
-              onHide={() => setModalShow(false)}
-              imageData={currentImage}
-              likeImage={likeImage}
-              unlikeImage={unlikeImage}/>:""}
-<UploadMediaModal/>
+<UploadMediaModal updateFunction={getImages}/>
+
 </div>
 }
 

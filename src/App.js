@@ -1,7 +1,7 @@
 import {React, useState,useContext } from "react";
 import {  Route, Routes } from "react-router-dom";
 import HomePage from "./Components/Pages/HomePage";
-import { ThemeContext } from "./Components/Contexts/ThemeContext";
+import { ThemeContextProvider } from "./Components/Contexts/ThemeContext";
 import { UserContextProvider, UserContext } from "./Components/Contexts/UserContext";
 import ActiveChats from "./Components/Pages/ActiveChatsPage";
 import WelcomePage from "./Components/Pages/WelcomePage";
@@ -13,15 +13,9 @@ import AuthCheck from "./Components/AuthChecker/AuthCheck";
 import LoginPage from "./Components/Pages/LoginPage";
 import LoginCheck from "./Components/AuthChecker/LoginCheck";
 function App() {  
-  let [darkMode, setDarkMode] = useState(false);
-  
-  function toggleTheme(){
-    darkMode?setDarkMode(false):setDarkMode(true);
-    console.log("Dark mode changed to "+darkMode);
-  }
   
   return (
-    <ThemeContext.Provider value={{darkMode,toggleTheme}}>
+    <ThemeContextProvider>
       <UserContextProvider>
       <PageHeader/>
     <div className="App">
@@ -31,6 +25,7 @@ function App() {
         
         <Route exact path="/home" element={<AuthCheck><HomePage/></AuthCheck>}/>
         <Route exact path="/profile" element={<AuthCheck><ProfilePage/></AuthCheck>}/>
+        <Route exact path="/profile/:id" element={<AuthCheck><ProfilePage/></AuthCheck>}/>
         {/* <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
         <Route exact path="/UploadMedia" element={<AuthCheck><UploadMedia/></AuthCheck>}/>
         <Route exact path="/chats" element={<AuthCheck><ActiveChats/></AuthCheck>}/>
@@ -38,7 +33,7 @@ function App() {
       </Routes>
     </div>
     </UserContextProvider>
-    </ThemeContext.Provider>
+    </ThemeContextProvider>
   );
 }
 

@@ -3,7 +3,9 @@ import { useContext, useRef } from 'react';
 import UserContext from '../Contexts/UserContext';
 import RegistrationForm from "./RegistrationForm";
 import axios from 'axios';
-
+import { baseUrl } from '../../ConfigFiles/Urls';
+import SockJS from 'sockjs-client';
+import * as Stomp from 'stompjs';
 
 function LoginForm(props){
 
@@ -12,6 +14,20 @@ const navigate = useNavigate();
 let userCtx = useContext(UserContext);
 let usernameHandler = useRef();
 let passwordHandler = useRef();
+
+
+
+function connect() {
+    var socket = new SockJS('http://localhost:8103/gs-guide-websocket');
+    let stompClient = Stomp.over(socket);
+    userCtx.setStompClient(stompClient);
+    stompClient.connect({headers:{ "Authorization":userCtx.token}}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/'+(userCtx.username), function (greeting) {
+            console.log(JSON.parse(greeting.body).content);
+        });
+    });
+}
     function loginFunction(event){
         event.preventDefault();
         const username = usernameHandler.current.value;
@@ -20,18 +36,22 @@ let passwordHandler = useRef();
             'username':username,
             'password':password
           }
-        axios.post('/user/login', user).then(
+        const formData = new FormData();
+        formData.append("username",username);
+        formData.append("password",password);
+        axios.post(baseUrl+'/user/login', formData).then(
             response=>{
               if(response.status===200){
-               console.log(response);
-               // set Cookie
                localStorage.setItem("USERNAME", username);
                localStorage.setItem("JWT", response.headers.authorization);
                userCtx.toggleLogin(usernameHandler.current.value,response.headers.authorization);
+               connect();
                navigate(props?.from, { replace: true });  
               }
             } 
-           );
+           ).catch(function (error) {
+            console.log(error);
+          });
     }
 return (
     <div>

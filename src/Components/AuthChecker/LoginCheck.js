@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 function LoginCheck(props){
     let location = useLocation();
     let userCtx = useContext(UserContext);
-    console.log(userCtx.username);
     return (userCtx.username?.length>0)?<Navigate to="/home" state={{ from: location }} replace />:props.children;
 }
 
