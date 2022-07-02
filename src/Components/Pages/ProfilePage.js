@@ -32,10 +32,9 @@ function ProfilePage(){
     const [arr, setArr] = useState([]);
    
     const getImages = async () => {
-      let formData = new FormData();
-      formData.append("username",currentUser?userCtx.username:id);
+      let queryUsername = currentUser?userCtx.username:id;
     
-       await axios.post(baseUrl+"/media/getAll",formData,
+       await axios.get(baseUrl+"/media/all/"+queryUsername,
         {
             headers: { 
               "Authorization":userCtx.token
@@ -50,6 +49,7 @@ function ProfilePage(){
                 row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
                 return row;
               })
+              media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)});
               media.mediaComments.sort((row1,row2)=>{
                 var date1 = new Date(row1.createdAt);
                 var date2 = new Date(row2.createdAt);
@@ -62,8 +62,9 @@ function ProfilePage(){
         }).catch(err=>console.log(err))
       };
       
-      const fetchProfile = ()=>{
-        axios.get(baseUrl+"/user/getUser/"+(currentUser?userCtx.username:id),
+      const fetchProfile = async ()=>{
+        
+       await axios.get(baseUrl+"/user/"+(currentUser?userCtx.username:id),
             {
               headers: { 
                 "Authorization":userCtx.token
@@ -75,46 +76,9 @@ function ProfilePage(){
             })
             .catch(err=>console.log(err));
       }
-      const deleteImage = async (mediaId) => {
-        var bodyFormData = new FormData();
-        bodyFormData.append('mediaId', mediaId);
-        await axios.post( baseUrl+"/media/deleteOneMedia",
-        bodyFormData,
-        {
-            headers: { 
-              "Authorization":userCtx.token
-            }
-        },
-        ).then(response=>{("Deleted successfully");
-        alert("Deleted successfully")
-      }).catch(err=>(err));
-      getImages();
-      };
-      const unlikeImage = async (mediaId) => {
-        var bodyFormData = new FormData();
-        bodyFormData.append('mediaId', mediaId);
-        await axios.post(baseUrl+"/media/unlikeMedia",
-        bodyFormData,
-        {
-            headers: { 
-              "Authorization":userCtx.token
-            }
-        },
-        ).then(response=>{getImages();}).catch(err=>(err));
-      };
-      const likeImage = async (mediaId) => {
-        var bodyFormData = new FormData();
-        bodyFormData.append('mediaId', mediaId);
-        await axios.post( baseUrl+"/media/likeMedia",
-        bodyFormData,
-        {
-            headers: { 
-              "Authorization":userCtx.token
-            }
-        },
-        ).then(response=>{getImages();}).catch(err=>(err));
-      };
+      
       useEffect(()=>{
+        
         fetchProfile();
         getImages();
       },[]);
@@ -142,10 +106,7 @@ return <div className="mx-auto" style={{width:"85%"}}>
                   key={key} 
                   imageData={item}
                   profilePage={true}
-                  deleteImage={deleteImage}
-                  likeImage={likeImage} 
-                  unlikeImage={unlikeImage}
-                  fetchProfile={getImages}
+                  refreshData={getImages}
                 />)})
     :currentUser?<NoProfileMedia/>:<NoMedia/>}
 </div>

@@ -37,6 +37,8 @@ function HomePage(){
                     row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
                     return row;
                   })
+                  media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+           
                   media.mediaComments?.sort((row1,row2)=>{
                     var date1 = new Date(row1.createdAt);
                     var date2 = new Date(row2.createdAt);
@@ -48,45 +50,6 @@ function HomePage(){
               setMediaLoaded(true);
             }).catch(err=>console.log(err));
         }
-        const deleteImage = async (mediaId) => {
-          var bodyFormData = new FormData();
-          bodyFormData.append('mediaId', mediaId);
-          await axios.post( baseUrl+"/media/deleteOneMedia",
-          bodyFormData,
-          {
-              headers: { 
-                "Authorization":userCtx.token
-              }
-          },
-          ).then(response=>{("Deleted successfully");
-          alert("Deleted successfully")
-        }).catch(err=>(err));
-        fetchFeed();
-        };
-        const unlikeImage = async (mediaId) => {
-          var bodyFormData = new FormData();
-          bodyFormData.append('mediaId', mediaId);
-          await axios.post(baseUrl+"/media/unlikeMedia",
-          bodyFormData,
-          {
-              headers: { 
-                "Authorization":userCtx.token
-              }
-          },
-          ).then(response=>{fetchFeed();}).catch(err=>(err));
-        };
-        const likeImage = async (mediaId) => {
-          var bodyFormData = new FormData();
-          bodyFormData.append('mediaId', mediaId);
-          await axios.post( baseUrl+"/media/likeMedia",
-          bodyFormData,
-          {
-              headers: { 
-                "Authorization":userCtx.token
-              }
-          },
-          ).then(response=>{fetchFeed();}).catch(err=>(err));
-        };
     let userCtx = useContext(UserContext);
     // const baseUrl = './sampleImages/img';
     // let arr = [...Array(9).keys()];
@@ -139,10 +102,7 @@ return (<div>
                   num={key}
                   key={key} 
                   imageData={item}
-                  deleteImage={deleteImage}
-                  likeImage={likeImage} 
-                  unlikeImage={unlikeImage}
-                  fetchProfile={fetchFeed}
+                  refreshData={fetchFeed}
               />
               )
         })

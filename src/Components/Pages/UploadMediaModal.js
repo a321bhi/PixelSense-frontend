@@ -24,7 +24,7 @@ function UploadMediaModal(props){
         formData.append("mediaTags",tagsToBeUploaded);
         formData.append("mediaCaption",captionToBeUploaded);
       }
-      const urlForUpload = baseUrl + (props?.profilePic?"/media/updateProfilePic":"/media/add");
+      const urlForUpload = baseUrl + (props?.profilePic?"/media/profile-pic":"/media/");
      axios.post(urlForUpload,formData,{
       headers: { 
         "Authorization":userCtx.token,

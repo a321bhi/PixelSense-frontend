@@ -32,14 +32,11 @@ function connect() {
         event.preventDefault();
         const username = usernameHandler.current.value;
         const password = passwordHandler.current.value;
-        const user = {
+        const userCredential = {
             'username':username,
             'password':password
           }
-        const formData = new FormData();
-        formData.append("username",username);
-        formData.append("password",password);
-        axios.post(baseUrl+'/user/login', formData).then(
+        axios.post(baseUrl+'/user/login', userCredential).then(
             response=>{
               if(response.status===200){
                localStorage.setItem("USERNAME", username);

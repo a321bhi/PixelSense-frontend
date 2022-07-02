@@ -12,7 +12,7 @@ function messageIconClick(){
     navigate('/chats');   
 }
 function profilePageClick(){
-    navigate('/profile');
+    navigate('/profile',);
 }
     return <Navbar className="w-100" expand={'lg'} >
     <Container fluid>

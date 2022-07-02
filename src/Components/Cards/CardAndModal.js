@@ -10,13 +10,11 @@ function CardAndModal(props){
     return <div className="col g-3">
         <CardView {...props} handleShow={handleShow} />
         <ImageModal closeRef={modalCloseButtonHandle}
-                fetchProfile={props.fetchProfile}
+                refreshData={props.refreshData}
                 local={props.local?props.local:false}
                 currentUser={props.currentUser}
-              deleteUserImage={props.deleteImage?props.deleteImage:()=>{}}
-              imageData={props.imageData}
-              likeImage={props.likeImage}
-              unlikeImage={props.unlikeImage}              
+            //   deleteUserImage={props.deleteImage?props.deleteImage:()=>{}}
+              imageData={props.imageData}           
               handleClose={handleClose}
               showModal={show}
               />

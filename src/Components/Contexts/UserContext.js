@@ -30,7 +30,7 @@ export const UserContext = React.createContext({
         setTokenState(token);
         let formData = new FormData();
         formData.append("username",user);
-        axios.get(baseUrl+"/user/getUser/"+user,
+        axios.get(baseUrl+"/user/"+user,
         {
           headers:{
             "Authorization":token

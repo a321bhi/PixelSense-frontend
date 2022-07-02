@@ -12,7 +12,11 @@ import UserContext from '../Contexts/UserContext';
 import { useContext } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../ConfigFiles/Urls';
+import CommentInputArea from './CommentInputArea';
+import { likeComment,unlikeComment,likeImage,unlikeImage,deleteImage } from '../ApiRequests/ImageApi';
 function ImageModal(props){
+  let userCtx = useContext(UserContext);
+  const newCommentHandle = useRef()
   var date = new Date(props.imageData.mediaDate);
  function addComment(){
    let formData = new FormData();
@@ -20,36 +24,22 @@ function ImageModal(props){
    if(commentContent.length>0){
     formData.append("mediaId",props.imageData.mediaId)
     formData.append("commentContent",commentContent);
-     axios.post(baseUrl+"/media/commentOnMedia",formData,
+     axios.post(baseUrl+"/media/comment",formData,
        {
            headers:{"Authorization":userCtx.token}
-         }).then(res=>{console.log(res);props.fetchProfile();newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
+         }).then(res=>{props.refreshData();newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
    }
    
  }
  function deleteComment(commentId){
-  let formData = new FormData();
-   formData.append("commentId",commentId);
-    axios.post(baseUrl+"/media/deleteComment",formData,
+  // let formData = new FormData();
+  //  formData.append("commentId",commentId);
+    axios.delete(baseUrl+"/media/comment/"+commentId,
       {
           headers:{"Authorization":userCtx.token}
-        }).then(res=>{console.log(res);props.fetchProfile()}).catch(err=>console.log(err)) 
+        }).then(res=>{props.refreshData()}).catch(err=>console.log(err)) 
   }
-//  useEffect(()=>{
-  // props?.imageData?.mediaComments?.sort((row1,row2)=>{
-  //   var date1 = new Date(row1.createdAt);
-  //   var date2 = new Date(row2.createdAt);
-  //   return date1.getTime()-date2.getTime();
-  // });
-  // props?.imageData?.mediaComments?.map((row)=>{
-  //   var date = new Date(row.createdAt);
-  //   row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
-  //   return row;
-  // });
-//  },[props]);
-  let userCtx = useContext(UserContext);
-  const newCommentHandle = useRef()
-  // let element= document.getElementsByClassName('.modal-backdrop')
+
 
    return props.showModal?<Modal
    size="xl"
@@ -63,15 +53,13 @@ function ImageModal(props){
       </div>
       <Modal.Body className="d-md-flex d-block" style={{width:"100%"}}> 
       <div className='p-3 custom-image-div' >
-      {/* Dont forget to re3place below lines */}
-      {/* <img alt={"image"} className="imgModal"  src={props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:""}/> */}
-      <img alt={"image"} className="imgModal"  src={props.local?props.imageData.imageAsBase64:(props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:"")}/>
+      <img alt={"image"} className="imgModal"  src={props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:""}/>
       </div>
       
       <div className='p-3 custom-comments-div'>
         {(props.imageData.likedBy?.includes(userCtx.username))?
-          <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>props.unlikeImage(props.imageData.mediaId)} size="2x"/>
-          :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>props.likeImage(props.imageData.mediaId)} size="2x"/>
+          <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
+          :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
         }
        {props.imageData.likedBy?.length+" likes"}
        <div className='float-end'>
@@ -84,7 +72,7 @@ function ImageModal(props){
                   <li><div 
                   role="button"
                   className="dropdown-item"  
-                        onClick={()=>{props.deleteUserImage(props.imageData.mediaId);props.handleClose();}} 
+                        onClick={()=>{deleteImage(props.imageData.mediaId,props.refreshData, userCtx);props.handleClose();}} 
                         >Delete Image
                       </div>
                   </li>            
@@ -95,8 +83,8 @@ function ImageModal(props){
         </div>
       {/* <Modal.Footer className='d-block fs-5'> */}
       <div>{props.imageData.mediaCaption?props.imageData.mediaCaption:""}</div>
-      <div>{props.imageData.mediaTags?props.imageData.mediaTags.map(tag=>{
-       return <span className='text-primary'>{"#"+tag+" "}</span>
+      <div>{props.imageData.mediaTags?props.imageData.mediaTags.map((tag,i)=>{
+       return <span key={i} className='text-primary'>{"#"+tag+" "}</span>
       }):""}</div>
       <div className='text-muted'>{props.imageData.mediaDate?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
         
@@ -108,7 +96,7 @@ function ImageModal(props){
               <ul className='list-group'>
               
                     {props.imageData.mediaComments.map(
-                    item=><li className='list-group-item '>
+                    (item,i)=><li key={i} className='list-group-item '>
                       <span className='fw-bold me-3'>{item.commentByUser.userName}</span>
                       {item.commentContent}
                       {item.commentByUser.userName===userCtx.username?
@@ -135,28 +123,22 @@ function ImageModal(props){
                           {item.createdAt}
                         </div>
                       }
+              <div className="d-flex text-muted">
+                {  (item.commentLikedBy?.includes(userCtx.username))?
+                   <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeComment(item.commentId,props.refreshData, userCtx)} size="2x"/>
+                  :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeComment(item.commentId,props.refreshData, userCtx)} size="2x"/>
+                }
+                <div className='mx-1'>
+                  {item.commentLikedBy?item.commentLikedBy.length+" likes":"0"+" likes"}
+                </div>
+              </div>
                       </li>
                     )
                   }
               </ul>
           :""}
           </div>
-          <form action="" className="">
-        <div className="my-3 form-floating  mx-auto d-flex">
-            <input 
-                type="text" 
-                className="form-control" 
-                id="addComment" 
-                placeholder="Add a comment.." 
-                name="addComment" 
-                ref={newCommentHandle} 
-                required
-                />
-            <label htmlFor="addComment">Add a comment</label>
-            <FontAwesomeIcon className='ms-2' role="button" icon={faPaperPlane} onClick={addComment} size="2x"></FontAwesomeIcon>
-        </div>
-        </form>
-  
+        <CommentInputArea addComment={addComment} newCommentHandle={newCommentHandle}/>  
         </div>
         </div>
         </Modal.Body>

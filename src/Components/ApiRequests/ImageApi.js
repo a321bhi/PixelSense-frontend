@@ -1,52 +1,63 @@
-// export const getImages = async () => {
-//     await axios.get( baseUrl+"/media/getAll",
-//     {
-//         headers: { 
-//           "Authorization":userCtx.token
-//         }
-//     },
-//     ).then(response=>{setArr(response.data);}).catch(err=>console.log(err))
-//   };
-//   export const deleteImage = async (event,mediaId) => {
-//     event.preventDefault();
-//     var bodyFormData = new FormData();
-//     bodyFormData.append('mediaId', mediaId);
-//     await axios.post( baseUrl+"/media/deleteOneMedia",
-//     bodyFormData,
-//     {
-//         headers: { 
-//           "Authorization":userCtx.token
-//         }
-//     },
-//     ).then(response=>{modalCloseButtonHandle.current.click();}).catch(err=>console.log(err));
-//     return 
-//   };
-//   export const unlikeImage = async (event,mediaId) => {
-//     event.preventDefault();
-//     var bodyFormData = new FormData();
-//     bodyFormData.append('mediaId', mediaId);
-//     await axios.post(baseUrl+"/media/unlikeMedia",
-//     bodyFormData,
-//     {
-//         headers: { 
-//           "Authorization":userCtx.token
-//         }
-//     },
-//     ).then(response=>{console.log("unliked media");
-//   }).catch(err=>console.log(err));
-//   };
-//   export const likeImage = async (event,mediaId) => {
-//     event.preventDefault();
-//     var bodyFormData = new FormData();
-//     bodyFormData.append('mediaId', mediaId);
-//     await axios.post( baseUrl+"/media/likeMedia",
-//     bodyFormData,
-//     {
-//         headers: { 
-//           "Authorization":userCtx.token
-//         }
-//     },
-//     ).then(response=>{console.log("Liked media");
-//     getImages();
-//   }).catch(err=>console.log(err));
-//   };
+import { baseUrl } from "../../ConfigFiles/Urls";
+import axios from "axios";
+
+export const deleteImage = async (mediaId, refreshData, userCtx) => {
+    // var bodyFormData = new FormData();
+    // bodyFormData.append('mediaId', mediaId);
+    await axios.delete( baseUrl+"/media/"+mediaId,
+    {
+        headers: { 
+          "Authorization":userCtx.token
+        }
+    }).then(response=>{("Deleted successfully");
+        alert("Deleted successfully")
+        }).catch(err=>(err));
+            refreshData();
+};
+export const unlikeImage = async (mediaId, refreshData, userCtx) => {
+    // var bodyFormData = new FormData();
+    // bodyFormData.append('mediaId', mediaId);
+    await axios.delete(baseUrl+"/media/likes/"+mediaId,
+    // bodyFormData,
+    {
+    headers: { 
+            "Authorization":userCtx.token
+          }
+      },
+      ).then(response=>{refreshData();}).catch(err=>(err));
+      };
+export const likeImage = async (mediaId, refreshData, userCtx) => {
+    var bodyFormData = new FormData();
+    bodyFormData.append('mediaId', mediaId);
+    await axios.post( baseUrl+"/media/likes",
+    bodyFormData,
+    {
+        headers: { 
+          "Authorization":userCtx.token
+        }
+    },
+     ).then(response=>{refreshData();}).catch(err=>(err));
+     };
+export const likeComment = async (commentId, refreshData, userCtx) => {
+    var bodyFormData = new FormData();
+    bodyFormData.append('commentId', commentId);
+    await axios.post( baseUrl+"/media/comment-likes",
+    bodyFormData,
+    {
+       headers: { 
+           "Authorization":userCtx.token
+         }
+     },
+      ).then(response=>{refreshData();}).catch(err=>(err));
+    };
+export const unlikeComment = async (commentId, refreshData, userCtx) => {
+    // var bodyFormData = new FormData();
+    // bodyFormData.append('commentId', commentId);
+    await axios.delete(baseUrl+"/media/comment-likes/"+commentId,
+    {
+    headers: { 
+            "Authorization":userCtx.token
+          }
+      },
+      ).then(response=>{refreshData();}).catch(err=>(err));
+};

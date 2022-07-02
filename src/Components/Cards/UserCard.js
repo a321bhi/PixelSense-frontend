@@ -6,21 +6,18 @@ import axios from "axios";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import UploadMediaModal from "../Pages/UploadMediaModal";
 function UserCard(props){
+    const bioPlaceHolder = "Add a bio..";
     const userCtx = useContext(UserContext);
     const descriptionRef = useRef();
     const [textAreaClass,setTextAreaClass] = useState("w-75 p-2 me-3 fst-italic");
-    const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?"Add a bio..":""));
+    const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?bioPlaceHolder:""));
     const [editable,setEditable] = useState(false);
-    const editDescription = ()=> setEditable(true);
-    const editComplete = ()=> {     
-        updateDescription();
-        setEditable(false);
-    }
+    // const toggleEdit = ()=> setEditable(!editable);
     const followUser=()=>{
         console.log(props)
         const formData = new FormData();
             formData.set("usernameToFollow",props.userProfile.username);
-            axios.post(baseUrl+"/user/followUser",formData,
+            axios.post(baseUrl+"/user/follow",formData,
             {
                 headers: { 
                     "Authorization":userCtx.token,
@@ -28,9 +25,9 @@ function UserCard(props){
             }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
     }
     const unfollowUser=()=>{
-        const formData = new FormData();
-            formData.set("usernameToUnfollow",props.userProfile.username);
-            axios.post(baseUrl+"/user/unfollowUser",formData,
+        // const formData = new FormData();
+        //     formData.set("usernameToUnfollow",props.userProfile.username);
+            axios.delete(baseUrl+"/user/follow/"+props.userProfile.username,
             {
                 headers: { 
                     "Authorization":userCtx.token,
@@ -45,20 +42,25 @@ function UserCard(props){
         }
     }
     function updateDescription(){
-        if(description!=="Add a bio.." && !editable){
-            const formData = new FormData();
-            formData.set("profileDescription",descriptionRef.current.innerHTML);
-            axios.post(baseUrl+"/user/updateDesc",formData,
+        setEditable(false);
+        if(description!==bioPlaceHolder){
+            const bio = { bio:descriptionRef.current.innerHTML}
+            axios.patch(baseUrl+"/user/bio",bio,
             {
                 headers: { 
                     "Authorization":userCtx.token,
                 }
-            }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
+            }).then(response=>{console.log(response);props.fetchProfile();})
+            .catch(err=>{
+                console.log(err);
+                setDescription(bioPlaceHolder);
+            }
+                );
 
         }
     }
     function deleteProfilePic(){
-        axios.get(baseUrl+"/media/deleteProfilePic",
+        axios.delete(baseUrl+"/media/profile-pic",
             {
                 headers: { 
                     "Authorization":userCtx.token,
@@ -69,11 +71,10 @@ function UserCard(props){
         toggleTextArea();
     },[editable]);
     function handleDescription(){
-        if(description==="Add a bio.."){
+        if(description===bioPlaceHolder){
             setDescription("");
         }
     }
-
     return <div className="d-block w-100 border-top border-bottom" style={{height:"30vh"}}>
         <div className="d-flex w-100 mt-5 p-3">
             <div className="w-25 ms-5 mx-auto">
@@ -115,7 +116,7 @@ function UserCard(props){
                 <div className="d-flex">
                     <div className="fs-3 w-25">{props.userProfile.username}</div>
                     {props.currentUser?"":
-                        props.userProfile.follower.filter(row=>row.userName==userCtx.username).length>0?
+                        props.userProfile.follower.filter(row=>row===userCtx.username).length>0?
                         <button className="btn-primary btn" onClick={unfollowUser}>Unfollow</button>
                         :<button className="btn-primary btn" onClick={followUser}>Follow</button>
                         
@@ -137,7 +138,7 @@ function UserCard(props){
             </div>
             <div className="fs-5">{props.userProfile.fullName}</div>
             <div className="input-group my-2 w-100">
-            {props.currentUser?<FontAwesomeIcon  role="button" onClick={editable?editComplete:editDescription} icon={faPenToSquare}></FontAwesomeIcon>:""}
+            {props.currentUser?<FontAwesomeIcon  role="button" onClick={editable?updateDescription:()=>setEditable(true)} icon={faPenToSquare}></FontAwesomeIcon>:""}
                 <div 
                 ref={descriptionRef}
                 className={textAreaClass}

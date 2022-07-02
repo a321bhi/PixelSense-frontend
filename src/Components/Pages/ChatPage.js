@@ -7,8 +7,8 @@ function ChatPage(props) {
       <div className="card-header"><MiniUserCard username={props.user}/></div>
       <div className="card-body overflow-auto" >
       <ul className="list-group w-100 d-flex ">
-        {props.message?.map(msg=>{
-           return <ChatMessageBubble message={msg} usernameTo={props.user} />
+        {props.message?.map((msg,i)=>{
+           return <ChatMessageBubble key={i} message={msg} usernameTo={props.user} />
         })
         }
         </ul>

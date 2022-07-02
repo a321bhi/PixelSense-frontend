@@ -29,7 +29,7 @@ function App() {
         {/* <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
         <Route exact path="/UploadMedia" element={<AuthCheck><UploadMedia/></AuthCheck>}/>
         <Route exact path="/chats" element={<AuthCheck><ActiveChats/></AuthCheck>}/>
-        <Route exact path="/chats/:id" element={<AuthCheck><ChatPage/></AuthCheck>} />
+        {/* <Route exact path="/chats/:id" element={<AuthCheck><ChatPage/></AuthCheck>} /> */}
       </Routes>
     </div>
     </UserContextProvider>
