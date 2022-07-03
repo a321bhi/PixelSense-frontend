@@ -12,7 +12,7 @@ function AuthCheck(props){
         if(userCtx.username===null || userCtx.username.length<1){
             userCtx.setUsername(username);
         }
-        if(userCtx.token===null || userCtx.token.length<1){
+        if(userCtx.getToken()===null ||userCtx.getToken().length<1){
             userCtx.setToken(authToken);
         }
     }    

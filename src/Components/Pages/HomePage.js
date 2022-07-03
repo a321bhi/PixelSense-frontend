@@ -12,25 +12,56 @@ import { Overlay } from "react-bootstrap";
 import SelectOrFollowMessage from "../UXMessages/SelectOrFollowMessage";
 
 function HomePage(){
+  let userCtx = useContext(UserContext);
   let [feedArr,setFeedArr]=useState([]);
   let [mediaLoaded, setMediaLoaded] =useState(false);
-  let [tagsUpdated, setTagsUpdated] =useState(false);
-  let[tags,setTags] = useState(["science","gaming"]);
-  // let[tagsSelected,setTagsSelected] = useState(["science","gaming"]);
+  let[tags,setTags] = useState([]);
   let [dataLoaded,setLoaded]=useState(false);
   let [show,setShow]= useState(false);
   let target = useRef(null)
-
+// (function(){
+//   console.log("username is "+userCtx.username);
+//   axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,
+//   ).then(response=>{userCtx.setTagsSelected(response.data?.feedPreference)}).catch(err=>console.log(err));
+// }());
     const fetchTags= ()=>{
-      axios.post("http://localhost:8102/media/getTags",
-      ).then(response=>{response.data = [...new Set(response.data)];setTags(response.data);setLoaded(true)}).catch(err=>console.log(err));
+      axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,)
+      .then(response=>{userCtx.setTagsSelected(response.data?.feedPreference)}).catch(err=>console.log(err));
+      
+      
+      axios.get("http://localhost:8102/media/tags")
+      .then(response=>{response.data = [...new Set(response.data)];setTags(response.data);setLoaded(true)}).catch(err=>console.log(err));
+      
     }
     const fetchFeed = ()=>{ 
+      
       let chosenTags=[...new Set(userCtx.tagsSelected)];
-      console.log(chosenTags)
-        // const chosenTags =["science","gaming","food"];
-        axios.post("http://localhost:8102/media/retrieveFeed",
-        chosenTags).then(response=>{
+      
+      const user={
+        username:userCtx.username,
+        feedPreference : userCtx.tagsSelected
+      }
+      axios.post("http://localhost:8102/media/feed-preference",
+      user,
+      {
+        headers:{
+          "Authorization":userCtx.getToken()
+        }
+      })
+      .then(res=>console.log("feed preference updated"))
+      .catch(err=>console.log(err));
+      if(chosenTags.length==0){
+        return;
+      }
+      let totalChars=40;
+      let queryTags= chosenTags.map(tag=>{
+        totalChars+=tag.length+1;
+        if(totalChars<1900){
+          return tag;
+        }
+      })        
+        axios.get("http://localhost:8102/media/feed/"+queryTags.toString())
+        .then(response=>{
                 response.data.map(media=>{
                   media.mediaComments?.map(row=>{
                     var date = new Date(row.createdAt);
@@ -50,7 +81,6 @@ function HomePage(){
               setMediaLoaded(true);
             }).catch(err=>console.log(err));
         }
-    let userCtx = useContext(UserContext);
     // const baseUrl = './sampleImages/img';
     // let arr = [...Array(9).keys()];
     useEffect(()=>{
@@ -61,32 +91,37 @@ return (<div>
     <FontAwesomeIcon icon={faAsterisk}></FontAwesomeIcon>
     </Button>
     <Overlay target={target.current} show={show} placement="right">
-    {<div className="overflow-auto"
+    {<div className="container"
      style={{
       position:"absolute",
        backgroundColor: 'rgba(0, 0, 0, 0.85)',
        padding: '2px 10px',
+       maxWidth:'50vw',
+       marginTop:'10vh',
        color: 'white',
        borderRadius: 3,
-       height:"50vh"
-     }}><div 
-     
-    // className={"overflow-auto"} style={{height:"50vh"}}
-    > {tags?.map(item=>{
-      return <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id={"check"+item }
-      defaultChecked={userCtx.tagsSelected.includes(item)?true:false}
-      onChange={()=>{if(userCtx.tagsSelected.includes(item)){
-        userCtx.setTagsSelected(userCtx.tagsSelected.filter(i=>i!=item))
-      }else{
-        userCtx.setTagsSelected([...userCtx.tagsSelected,item])
+       overflowY:"auto",
+       overflowX:"hidden",
+       maxHeight:"50vh"
+     }}>
+      <div className="row row-cols-3 ms-2">
+       {tags?.map(item=>{
+          return <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id={"check"+item }
+                      defaultChecked={userCtx.tagsSelected.includes(item)?true:false}
+                      onChange={()=>{
+                        if(userCtx.tagsSelected.includes(item)){
+                          userCtx.setTagsSelected(userCtx.tagsSelected.filter(i=>i!==item))
+                          }else{
+                            userCtx.setTagsSelected([...userCtx.tagsSelected,item])
+                          }
+                        }
+                      }/>
+                <label class="form-check-label ms-2" for={"check"+item}>{item}</label>
+              </div>
+          }
+        )
       }
-    }
-  }
-      ></input>
-      <label class="form-check-label" for="flexCheckDefault">{item}</label>
-      </div>
-      })}
       </div>
       </div>
       

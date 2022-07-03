@@ -1,9 +1,8 @@
 import Modal from 'react-bootstrap/Modal';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRef } from 'react';
 import './ImageModal.css';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
@@ -26,7 +25,7 @@ function ImageModal(props){
     formData.append("commentContent",commentContent);
      axios.post(baseUrl+"/media/comment",formData,
        {
-           headers:{"Authorization":userCtx.token}
+           headers:{"Authorization":userCtx.getToken()}
          }).then(res=>{props.refreshData();newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
    }
    
@@ -36,7 +35,7 @@ function ImageModal(props){
   //  formData.append("commentId",commentId);
     axios.delete(baseUrl+"/media/comment/"+commentId,
       {
-          headers:{"Authorization":userCtx.token}
+          headers:{"Authorization":userCtx.getToken()}
         }).then(res=>{props.refreshData()}).catch(err=>console.log(err)) 
   }
 

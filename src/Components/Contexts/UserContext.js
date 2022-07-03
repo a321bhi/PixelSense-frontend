@@ -13,6 +13,7 @@ export const UserContext = React.createContext({
     toggleLogin: ()=>{},
     setUsername:()=>{},
     setToken:()=>{},
+    getToken:()=>{},
     setUserProfile:()=>{},
     setStompClient :()=>{}
   });
@@ -23,11 +24,12 @@ export const UserContext = React.createContext({
     const [tokenState, setTokenState] = useState("");
     const [userProfileState, setUserProfileState] =useState({});
     const [stompClient, setStompClient] = useState(null);
-    const [tagsSelected, setTagsSelected] = useState(["science","gaming"]);
+    const [tagsSelected, setTagsSelected] = useState([]);
     function toggleLoginHandler(user,token){
       if(usernameState.length===0){
         setUsernameState(user);
         setTokenState(token);
+        localStorage.setItem('token',token);
         let formData = new FormData();
         formData.append("username",user);
         axios.get(baseUrl+"/user/"+user,
@@ -37,8 +39,20 @@ export const UserContext = React.createContext({
           }
         }).then(res=>{setUserProfileState(res.data);console.log(res.data)})
       }else{
+        localStorage.removeItem(token);
         setUsernameState("");
         setTokenState("");
+        setUserProfileState({});
+        setTagsSelected([]);
+        stompClient.disconnect();
+        setStompClient(null);
+      }
+    }
+    function getToken(){
+      if(tokenState?.length>0){
+        return tokenState;
+      }else if(localStorage.getItem('token')!==null){
+        return localStorage.getItem('token');
       }
     }
     const context={
@@ -52,7 +66,8 @@ export const UserContext = React.createContext({
         setUsername:setUsernameState,
         setToken: setTokenState,
         setUserProfile:setUserProfileState,
-        setStompClient:setStompClient
+        setStompClient:setStompClient,
+        getToken:getToken
     };
     return <UserContext.Provider value={context}>
         {props.children}

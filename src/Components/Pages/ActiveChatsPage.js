@@ -11,6 +11,7 @@ import NoMessages from "../UXMessages/NoMessages";
 import NoChats from "../UXMessages/NoChats";
 import SockJS from "sockjs-client";
 import * as Stomp from 'stompjs';
+import MiniUserCard from "../Cards/MiniUserCard";
 
 function ActiveChats() {
   let [allChats,setAllChats] = useState([]);
@@ -22,7 +23,7 @@ let userCtx = useContext(UserContext);
     var socket = new SockJS('http://localhost:8103/gs-guide-websocket');
     let stompClient = Stomp.over(socket);
     userCtx.setStompClient(stompClient);
-    stompClient.connect({headers:{ "Authorization":userCtx.token}}, function (frame) {
+    stompClient.connect({headers:{ "Authorization":userCtx.getToken()}}, function (frame) {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/'+(userCtx.username), function (greeting) {
             console.log(JSON.parse(greeting.body).content);
@@ -79,7 +80,7 @@ const getUsersFromContext= ()=>{
                       action variant="primary" 
                       className="text-start w-100" 
                       key={i}>
-                     <Nav.Link className="border" role="button" style={{height:"7vh"}} eventKey={item}>{item}</Nav.Link>
+                     <Nav.Link className="border" role="button" style={{height:"7vh"}} eventKey={item}><MiniUserCard disableProfileLink={true} username={item}></MiniUserCard></Nav.Link>
                     </Nav.Item>}
                     })
             }

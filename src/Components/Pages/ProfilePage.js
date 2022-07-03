@@ -37,7 +37,7 @@ function ProfilePage(){
        await axios.get(baseUrl+"/media/all/"+queryUsername,
         {
             headers: { 
-              "Authorization":userCtx.token
+              "Authorization":userCtx.getToken()
             }
         },
         ).then(
@@ -67,7 +67,7 @@ function ProfilePage(){
        await axios.get(baseUrl+"/user/"+(currentUser?userCtx.username:id),
             {
               headers: { 
-                "Authorization":userCtx.token
+                "Authorization":userCtx.getToken()
               }
             },).then(response=>{
               setUserProfile(response.data);

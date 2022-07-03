@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import UploadMediaModal from "../Pages/UploadMediaModal";
+import FollowersModal from "./FollowersModal";
+import Button from "react-bootstrap/Button";
 function UserCard(props){
+    const [selectedTab, setSelectedTab] = useState("");
+    const [modalShow, setModalShow] = useState(false);
     const bioPlaceHolder = "Add a bio..";
     const userCtx = useContext(UserContext);
     const descriptionRef = useRef();
@@ -20,7 +24,7 @@ function UserCard(props){
             axios.post(baseUrl+"/user/follow",formData,
             {
                 headers: { 
-                    "Authorization":userCtx.token,
+                    "Authorization":userCtx.getToken(),
                 }
             }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
     }
@@ -30,7 +34,7 @@ function UserCard(props){
             axios.delete(baseUrl+"/user/follow/"+props.userProfile.username,
             {
                 headers: { 
-                    "Authorization":userCtx.token,
+                    "Authorization":userCtx.getToken(),
                 }
             }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
     }
@@ -48,7 +52,7 @@ function UserCard(props){
             axios.patch(baseUrl+"/user/bio",bio,
             {
                 headers: { 
-                    "Authorization":userCtx.token,
+                    "Authorization":userCtx.getToken(),
                 }
             }).then(response=>{console.log(response);props.fetchProfile();})
             .catch(err=>{
@@ -63,7 +67,7 @@ function UserCard(props){
         axios.delete(baseUrl+"/media/profile-pic",
             {
                 headers: { 
-                    "Authorization":userCtx.token,
+                    "Authorization":userCtx.getToken(),
                 }
             }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
     }
@@ -123,11 +127,11 @@ function UserCard(props){
                     }
                 </div>
             <div className=" d-flex text-center mt-1 fs-5">
-                <div className="d-flex">
+                <div className="d-flex" role="button" onClick={() => {setModalShow(true);setSelectedTab("followers")}}>
                         <div>Followers</div>
                         <div className="mx-2" style={{height:"40px"}}>{props.userProfile.follower?.length}</div>
                 </div>
-                <div className="d-flex mx-4">
+                <div className="d-flex mx-4"  role="button" onClick={() =>{setModalShow(true);setSelectedTab("following")}}>
                         <div>Following</div>
                         <div className="mx-2" style={{height:"40px"}}>{props.userProfile.following?.length}</div>
                 </div>
@@ -154,6 +158,13 @@ function UserCard(props){
         </div>
         <UploadMediaModal profilePic={true} multiModal={"uploadMediaModalProfilePic"}
          updateFunction={props.fetchProfile}/>
+        <FollowersModal
+        selectedTab={selectedTab}
+        follower={props.userProfile.follower}
+        following={props.userProfile.following}
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        />
     </div>
 }
 export default UserCard;

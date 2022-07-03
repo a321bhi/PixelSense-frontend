@@ -11,13 +11,15 @@ function MiniUserCard(props){
         axios.get(baseUrl+"/user/"+props?.username,
         {
             headers: { 
-              "Authorization":userCtx.token
+              "Authorization":userCtx.getToken()
             }
           }
         ).then(response=>{setPic(response.data.profilePicAsBase64);  }).catch(err=>console.log(err));
     }
     const navToUser= ()=>{
-        navigate("/profile/"+props.username);  
+        if(!props.disableProfileLink){
+            navigate("/profile/"+props.username);  
+        }
     }
     useEffect(()=>{
     },[pic])

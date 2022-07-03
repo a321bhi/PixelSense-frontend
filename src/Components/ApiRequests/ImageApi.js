@@ -7,7 +7,7 @@ export const deleteImage = async (mediaId, refreshData, userCtx) => {
     await axios.delete( baseUrl+"/media/"+mediaId,
     {
         headers: { 
-          "Authorization":userCtx.token
+          "Authorization":userCtx.getToken()
         }
     }).then(response=>{("Deleted successfully");
         alert("Deleted successfully")
@@ -21,7 +21,7 @@ export const unlikeImage = async (mediaId, refreshData, userCtx) => {
     // bodyFormData,
     {
     headers: { 
-            "Authorization":userCtx.token
+            "Authorization":userCtx.getToken()
           }
       },
       ).then(response=>{refreshData();}).catch(err=>(err));
@@ -33,7 +33,7 @@ export const likeImage = async (mediaId, refreshData, userCtx) => {
     bodyFormData,
     {
         headers: { 
-          "Authorization":userCtx.token
+          "Authorization":userCtx.getToken()
         }
     },
      ).then(response=>{refreshData();}).catch(err=>(err));
@@ -45,7 +45,7 @@ export const likeComment = async (commentId, refreshData, userCtx) => {
     bodyFormData,
     {
        headers: { 
-           "Authorization":userCtx.token
+           "Authorization":userCtx.getToken()
          }
      },
       ).then(response=>{refreshData();}).catch(err=>(err));
@@ -56,7 +56,7 @@ export const unlikeComment = async (commentId, refreshData, userCtx) => {
     await axios.delete(baseUrl+"/media/comment-likes/"+commentId,
     {
     headers: { 
-            "Authorization":userCtx.token
+            "Authorization":userCtx.getToken()
           }
       },
       ).then(response=>{refreshData();}).catch(err=>(err));

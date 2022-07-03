@@ -14,19 +14,28 @@ const navigate = useNavigate();
 let userCtx = useContext(UserContext);
 let usernameHandler = useRef();
 let passwordHandler = useRef();
-
+let maxTries = 5;
 
 
 function connect() {
     var socket = new SockJS('http://localhost:8103/gs-guide-websocket');
     let stompClient = Stomp.over(socket);
     userCtx.setStompClient(stompClient);
-    stompClient.connect({headers:{ "Authorization":userCtx.token}}, function (frame) {
+    stompClient.connect( {headers:{ "Authorization":userCtx.getToken()}}, function (frame) {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/'+(userCtx.username), function (greeting) {
             console.log(JSON.parse(greeting.body).content);
-        });
-    });
+        }
+        );
+    },()=>{
+        if(maxTries>0){
+            maxTries-=1;
+            connect();
+
+        }
+    }
+
+    );
 }
     function loginFunction(event){
         event.preventDefault();
@@ -52,7 +61,7 @@ function connect() {
     }
 return (
     <div>
-    <div className="shadow col-10 pt-5 container card p-5 mt-5 h-75 col-lg-4">
+   
 {props?.fromRedirect?<div className='text-danger fs-5 text-center mb-2'>Please login first</div>:""}
     <form action="" className="">
         <div className="text-center display-6">Login</div>
@@ -89,7 +98,7 @@ return (
         </div>
     </form>
     <div className="text-center">Don't have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Sign up</a></div>
-    </div>
+    
     <RegistrationForm/>
     </div>
 );

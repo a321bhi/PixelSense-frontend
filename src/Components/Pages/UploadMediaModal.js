@@ -27,7 +27,7 @@ function UploadMediaModal(props){
       const urlForUpload = baseUrl + (props?.profilePic?"/media/profile-pic":"/media/");
      axios.post(urlForUpload,formData,{
       headers: { 
-        "Authorization":userCtx.token,
+        "Authorization":userCtx.getToken(),
         "Content-Type": 'multipart/form-data'
       }}).then((res) => {
           alert("File Upload success");

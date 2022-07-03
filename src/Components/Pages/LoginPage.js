@@ -4,7 +4,7 @@ function LoginPage() {
   let location = useLocation();
   let from = location.state?.from?.pathname || "/home";
   return (
-    <div className="App">
+    <div className="border col-lg-4 col-10 container p-5 mt-5 ">
       <LoginForm from={from} fromRedirect={true}/>
     </div>
   );
