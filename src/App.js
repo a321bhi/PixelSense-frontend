@@ -12,6 +12,7 @@ import ProfilePage from "./Components/Pages/ProfilePage";
 import AuthCheck from "./Components/AuthChecker/AuthCheck";
 import LoginPage from "./Components/Pages/LoginPage";
 import LoginCheck from "./Components/AuthChecker/LoginCheck";
+import 'react-toastify/dist/ReactToastify.css';
 function App() {  
   
   return (

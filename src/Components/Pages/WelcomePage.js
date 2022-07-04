@@ -5,10 +5,10 @@ function WelcomePage() {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-8">
+        <div className=" col-md-6">
       {/* <WelcomeMessage/> */}
       </div>
-      <div className="col-4 border p-5" style={{marginTop:"10vh", height:"50vh"}}>
+      <div className="col-12 col-md-6 border p-5" style={{marginTop:"10vh", height:"50vh"}}>
       <LoginForm from={from}/>
       </div>
       </div>

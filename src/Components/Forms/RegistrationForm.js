@@ -2,7 +2,7 @@ import axios from "axios";
 import {  useRef,useState } from "react";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import './RegistrationFormStyle.css';
-
+import { ToastContainer, toast } from 'react-toastify';
 
 function RegistrationForm(){
   const modalCloseButtonHandle = useRef();
@@ -77,7 +77,16 @@ function RegistrationForm(){
        response=>{
          if(response.status===200){
           console.log("User added successfully");
-          alert("User added successfully!");
+          toast.info('User added successfully!', {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            pauseOnFocusLoss:false
+            });
           formInputs.forEach(formInput =>{
             formInput.current.value="";
           });
@@ -223,6 +232,8 @@ function RegistrationForm(){
         </div>
       </div>
     </div>
+    
+                    <ToastContainer theme="dark"/>
   </div>
   );
 

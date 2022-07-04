@@ -1,6 +1,6 @@
 import Modal from 'react-bootstrap/Modal';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRef } from 'react';
 import './ImageModal.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,15 +8,20 @@ import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart  as faHeartSolid} from '@fortawesome/free-solid-svg-icons';
 import UserContext from '../Contexts/UserContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../ConfigFiles/Urls';
 import CommentInputArea from './CommentInputArea';
 import { likeComment,unlikeComment,likeImage,unlikeImage,deleteImage } from '../ApiRequests/ImageApi';
 function ImageModal(props){
+  let captionPlaceHolder="Add a caption...";
+  let [editable, setEditable] = useState(false);
+  let [textAreaClass, setTextAreaClass] = useState("");
   let userCtx = useContext(UserContext);
-  const newCommentHandle = useRef()
+  const newCommentHandle = useRef();
+  const captionHandle = useRef();
   var date = new Date(props.imageData.mediaDate);
+
  function addComment(){
    let formData = new FormData();
    let commentContent = newCommentHandle.current.value;
@@ -27,9 +32,40 @@ function ImageModal(props){
        {
            headers:{"Authorization":userCtx.getToken()}
          }).then(res=>{props.refreshData();newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
-   }
+   }}
    
- }
+   function updateDescription(){
+    let text = captionHandle?.current?.innerHTML;
+    let tags = [];
+    if(text?.includes("#")){
+       tags=text.match(/#[a-z]+/gi);
+    }
+ 
+    if(text!==props?.imageData?.mediaCaption){
+        const payload = {mediaId:props?.imageData?.mediaId, mediaCaption:text,mediaTags:tags}
+        axios.patch(baseUrl+"/media-caption",payload,
+        {
+            headers: { 
+                "Authorization":userCtx.getToken(),
+            }
+        }).then(response=>{console.log(response);props.refreshData();})
+        .catch(err=>{
+            console.log(err);
+            // setDescription(bioPlaceHolder);
+          }
+          );
+          }
+          toggleTextArea();
+        }
+ const toggleTextArea=()=>{
+  if(!editable){
+      setEditable(true);
+      setTextAreaClass("fst-italic border");
+  }else{
+      setTextAreaClass("");
+      setEditable(false);
+  }
+}
  function deleteComment(commentId){
   // let formData = new FormData();
   //  formData.append("commentId",commentId);
@@ -38,7 +74,6 @@ function ImageModal(props){
           headers:{"Authorization":userCtx.getToken()}
         }).then(res=>{props.refreshData()}).catch(err=>console.log(err)) 
   }
-
 
    return props.showModal?<Modal
    size="xl"
@@ -68,6 +103,14 @@ function ImageModal(props){
                   <FontAwesomeIcon icon={faEllipsisVertical}></FontAwesomeIcon>
                 </div>
                 <ul className="dropdown-menu" aria-labelledby="editImage">
+                <li><div 
+                  role="button"
+                  className="dropdown-item"  
+                  onClick={()=>{toggleTextArea()}}
+                        // onClick={()=>{deleteImage(props.imageData.mediaId,props.refreshData, userCtx);props.handleClose();}} 
+                        >Update Caption
+                      </div>
+                  </li> 
                   <li><div 
                   role="button"
                   className="dropdown-item"  
@@ -81,9 +124,20 @@ function ImageModal(props){
           }
         </div>
       {/* <Modal.Footer className='d-block fs-5'> */}
-      <div>{props.imageData.mediaCaption?props.imageData.mediaCaption:""}</div>
+      <div 
+      
+      style={{minHeight:"40px"}}
+          contentEditable={editable} 
+          className={"fs-5"+textAreaClass}
+          ref={captionHandle}
+          >{props.imageData.mediaCaption?props.imageData.mediaCaption:""}
+          </div>
+          {editable?
+          <div role="button" onClick={updateDescription} contentEditable={false} className='btn border float-end'>Update</div>
+          :""}
+
       <div>{props.imageData.mediaTags?props.imageData.mediaTags.map((tag,i)=>{
-       return <span key={i} className='text-primary'>{"#"+tag+" "}</span>
+       return <span key={i} className='text-primary'>{tag+" "}</span>
       }):""}</div>
       <div className='text-muted'>{props.imageData.mediaDate?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
         

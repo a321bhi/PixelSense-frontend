@@ -1,6 +1,7 @@
 import HeaderDarkSwitch from "./HeaderDarkSwitch";
 import LogoutSwitch from "./LogoutSwitch";
 import { Navbar,Container,Offcanvas,Nav,Form,Button } from "react-bootstrap";
+import MiniUserCard from '../Cards/MiniUserCard';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from 'react-router-dom';
 import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
@@ -45,25 +46,28 @@ useEffect(()=>{
         </Offcanvas.Header>
         <Offcanvas.Body>
         <div className="d-flex w-100 justify-content-center">
-            <Form.Control
+            <input
               type="search"
               placeholder="Search"
-              className="me-2 w-50 dropdown-toggle"
+              className="me-2 w-50 dropdown-toggle form-control "
               aria-label="Search"
               ref={searchBarHandle}
               onChange={search}
               id="dropdownMenuClickableInside" 
               data-bs-toggle="dropdown" 
               data-bs-auto-close="outside " aria-expanded="false"
-            />
-            <ul className="dropdown-menu w-25" style={{left:"25%",maxHeight:"45vh",overflowY:"auto"}}  aria-labelledby="dropdownMenuClickableInside">
+            ></input>
+            <ul className="dropdown-menu" style={{left:"21%",width:"25vw",maxHeight:"45vh",overflowY:"auto"}}  aria-labelledby="dropdownMenuClickableInside">
+            <li className="text-center fw-bold dropdown-item">Tags</li>
             {searchResult?.mediaTagsOutput?.length>0 && searchBarHandle?.current?.value!==""?
-                  searchResult?.mediaTagsOutput?.map(output=> <li><a class="dropdown-item" href="#">{output}</a></li>)
-                  :<li>No tags</li>
+                  searchResult?.mediaTagsOutput?.map(output=> <li><a class="dropdown-item text-primary" href="#">#{output}</a></li>)
+                  :<li  className="text-center">No tags found</li>
             }
+            <div className="border"></div>
+            <li className="text-center fw-bold dropdown-item">Users</li>
             {searchResult?.usernameOutput?.length>0 && searchBarHandle?.csurrent?.value!==""?
-                  searchResult?.usernameOutput?.map(output=> <li><a class="dropdown-item" href="#">{output}</a></li>)
-                  :<li>No users</li>
+                  searchResult?.usernameOutput?.map(output=> <li><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
+                  :<li className="text-center">No users found</li>
                   
             }
             </ul>

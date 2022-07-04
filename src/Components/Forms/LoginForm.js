@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import { useContext, useRef } from 'react';
 import UserContext from '../Contexts/UserContext';
 import RegistrationForm from "./RegistrationForm";
@@ -6,8 +6,10 @@ import axios from 'axios';
 import { baseUrl } from '../../ConfigFiles/Urls';
 import SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
-
+import { ToastContainer, toast } from 'react-toastify';
 function LoginForm(props){
+   
+  
 
 const navigate = useNavigate();
 
@@ -17,14 +19,23 @@ let passwordHandler = useRef();
 let maxTries = 5;
 
 
-function connect() {
+function connect(username,token) {
     var socket = new SockJS('http://localhost:8103/gs-guide-websocket');
     let stompClient = Stomp.over(socket);
     userCtx.setStompClient(stompClient);
-    stompClient.connect( {headers:{ "Authorization":userCtx.getToken()}}, function (frame) {
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/'+(userCtx.username), function (greeting) {
-            console.log(JSON.parse(greeting.body).content);
+    stompClient.connect( {headers:{ "Authorization":token}}, function (frame) {
+        console.log('Connected to WS');
+        stompClient.subscribe('/topic/'+username, function (message) {
+            toast.info(JSON.parse(message.body).usernameFrom+": "+JSON.parse(message.body).message, {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                pauseOnFocusLoss:false
+                });
         }
         );
     },()=>{
@@ -51,13 +62,25 @@ function connect() {
                localStorage.setItem("USERNAME", username);
                localStorage.setItem("JWT", response.headers.authorization);
                userCtx.toggleLogin(usernameHandler.current.value,response.headers.authorization);
-               connect();
+               
+               connect(username,response.headers.authorization);
                navigate(props?.from, { replace: true });  
               }
             } 
-           ).catch(function (error) {
-            console.log(error);
-          });
+           ).catch(err=>{
+            console.log(err);
+            if(err.response.status===401){
+                toast.error('Wrong password!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    pauseOnFocusLoss:false
+                    });
+            }});
     }
 return (
     <div>
@@ -98,7 +121,6 @@ return (
         </div>
     </form>
     <div className="text-center">Don't have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Sign up</a></div>
-    
     <RegistrationForm/>
     </div>
 );

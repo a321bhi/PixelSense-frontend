@@ -32,9 +32,8 @@ let userCtx = useContext(UserContext);
 }}
  
 const getUsersFromContext= ()=>{
-  console.log(userCtx)
-  return [...userCtx.userProfile.follower,
-          ...userCtx.userProfile.following];
+  return [...userCtx?.userProfile?.follower,
+          ...userCtx?.userProfile?.following];
 }
   const getAllChats= ()=>{
     const formData = new FormData();

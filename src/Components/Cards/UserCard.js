@@ -79,9 +79,9 @@ function UserCard(props){
             setDescription("");
         }
     }
-    return <div className="d-block w-100 border-top border-bottom" style={{height:"30vh"}}>
-        <div className="d-flex w-100 mt-5 p-3">
-            <div className="w-25 ms-5 mx-auto">
+    return <div className="w-100 border-top border-bottom" style={{maxHeight:"50vh"}}>
+        <div className="d-md-flex d-block w-100 mt-5 p-3">
+            <div className="w-25 mx-md-2 mx-auto">
                 <div className="position-relative mx-auto" style={{height:"15vh",width:"15vh"}}>
                 <img 
                     className="mx-auto rounded d-block " 
@@ -116,7 +116,7 @@ function UserCard(props){
             }
                 </div>
              </div>
-             <div className="mx-2 w-75">
+             <div className="mx-2 w-75 mt-2">
                 <div className="d-flex">
                     <div className="fs-3 w-25">{props.userProfile.username}</div>
                     {props.currentUser?"":
@@ -126,18 +126,18 @@ function UserCard(props){
                         
                     }
                 </div>
-            <div className=" d-flex text-center mt-1 fs-5">
-                <div className="d-flex" role="button" onClick={() => {setModalShow(true);setSelectedTab("followers")}}>
+            <div className=" d-flex text-center my-3 fs-5 w-100">
+                <div className="d-block w-md-100" role="button" onClick={() => {setModalShow(true);setSelectedTab("followers")}}>
+                        <div className="text-center" style={{height:"30px"}}>{props.userProfile.follower?.length}</div>
                         <div>Followers</div>
-                        <div className="mx-2" style={{height:"40px"}}>{props.userProfile.follower?.length}</div>
                 </div>
-                <div className="d-flex mx-4"  role="button" onClick={() =>{setModalShow(true);setSelectedTab("following")}}>
+                <div className="d-block ms-5  w-md-100"  role="button" onClick={() =>{setModalShow(true);setSelectedTab("following")}}>
+                        <div className="text-center" style={{height:"30px"}}>{props.userProfile.following?.length}</div>
                         <div>Following</div>
-                        <div className="mx-2" style={{height:"40px"}}>{props.userProfile.following?.length}</div>
                 </div>
-                <div className="d-flex mx-4">
+                <div className="d-block ms-5  w-md-100">
+                        <div className="text-center"  style={{height:"30px"}}>{props.mediaCount}</div>
                         <div>Posts</div>
-                        <div className="mx-2"  style={{height:"40px"}}>{props.mediaCount}</div>
                 </div>
             </div>
             <div className="fs-5">{props.userProfile.fullName}</div>

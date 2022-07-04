@@ -14,42 +14,29 @@ import SelectOrFollowMessage from "../UXMessages/SelectOrFollowMessage";
 function HomePage(){
   let userCtx = useContext(UserContext);
   let [feedArr,setFeedArr]=useState([]);
-  let [mediaLoaded, setMediaLoaded] =useState(false);
   let[tags,setTags] = useState([]);
-  let [dataLoaded,setLoaded]=useState(false);
   let [show,setShow]= useState(false);
   let target = useRef(null)
+  let [feedPrefUpdated, setFeedPrefUpdated] =  useState(false);
 // (function(){
 //   console.log("username is "+userCtx.username);
 //   axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,
 //   ).then(response=>{userCtx.setTagsSelected(response.data?.feedPreference)}).catch(err=>console.log(err));
 // }());
-    const fetchTags= ()=>{
-      axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,)
+    const fetchTags= async ()=>{
+     await axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,)
       .then(response=>{userCtx.setTagsSelected(response.data?.feedPreference)}).catch(err=>console.log(err));
       
       
       axios.get("http://localhost:8102/media/tags")
-      .then(response=>{response.data = [...new Set(response.data)];setTags(response.data);setLoaded(true)}).catch(err=>console.log(err));
-      
+      .then(response=>{response.data = [...new Set(response.data)];setTags(response.data);}).catch(err=>console.log(err));
+      setFeedPrefUpdated(!feedPrefUpdated);
     }
-    const fetchFeed = ()=>{ 
+    const fetchFeed = async ()=>{ 
       
       let chosenTags=[...new Set(userCtx.tagsSelected)];
       
-      const user={
-        username:userCtx.username,
-        feedPreference : userCtx.tagsSelected
-      }
-      axios.post("http://localhost:8102/media/feed-preference",
-      user,
-      {
-        headers:{
-          "Authorization":userCtx.getToken()
-        }
-      })
-      .then(res=>console.log("feed preference updated"))
-      .catch(err=>console.log(err));
+    
       if(chosenTags.length==0){
         return;
       }
@@ -60,7 +47,7 @@ function HomePage(){
           return tag;
         }
       })        
-        axios.get("http://localhost:8102/media/feed/"+queryTags.toString())
+       await axios.get("http://localhost:8102/media/feed/"+queryTags.toString())
         .then(response=>{
                 response.data.map(media=>{
                   media.mediaComments?.map(row=>{
@@ -78,16 +65,38 @@ function HomePage(){
                   return media;
                 })
                 setFeedArr(response.data);
-              setMediaLoaded(true);
             }).catch(err=>console.log(err));
         }
-    // const baseUrl = './sampleImages/img';
-    // let arr = [...Array(9).keys()];
+    function updateFeedPreference(){
+      if(!show){
+      const user={
+        username:userCtx.username,
+        feedPreference : userCtx.tagsSelected
+      }
+
+      axios.post("http://localhost:8102/media/feed-preference",
+      user,
+      {
+        headers:{
+          "Authorization":userCtx.getToken()
+        }
+      })
+      .then(res=>console.log("feed preference updated"))
+      .catch(err=>console.log(err));
+   
+    }
+    setFeedPrefUpdated(!feedPrefUpdated);
+    }
+
     useEffect(()=>{
-        fetchFeed();fetchTags();
-    },[mediaLoaded])
+        fetchTags();
+        fetchFeed();
+    },[])
+    useEffect(()=>{
+      fetchFeed();
+    },[feedPrefUpdated])
 return (<div>
-  <div> <Button ref={target} onClick={() => {setShow(!show); fetchFeed();}}  >
+  <div> <Button ref={target} onClick={() => {setShow(!show); updateFeedPreference();}}  >
     <FontAwesomeIcon icon={faAsterisk}></FontAwesomeIcon>
     </Button>
     <Overlay target={target.current} show={show} placement="right">
@@ -131,7 +140,7 @@ return (<div>
     <div className="row row-cols-1 row-cols-md-3 gx-2 mx-auto mt-2" 
         style={{width:"90%"}}
  >
-          {!mediaLoaded||feedArr.length===0?<SelectOrFollowMessage/>:
+          {feedArr?.length<1?<SelectOrFollowMessage/>:
     feedArr.map((item,key)=>{
         return (<CardAndModal
                   num={key}
