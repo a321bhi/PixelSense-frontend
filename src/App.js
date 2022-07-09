@@ -13,6 +13,7 @@ import AuthCheck from "./Components/AuthChecker/AuthCheck";
 import LoginPage from "./Components/Pages/LoginPage";
 import LoginCheck from "./Components/AuthChecker/LoginCheck";
 import 'react-toastify/dist/ReactToastify.css';
+import SelectedTagPage from "./Components/Pages/SelectedTagPage";
 function App() {  
   
   return (
@@ -30,6 +31,7 @@ function App() {
         {/* <Route exact path="/profile/update" element={<UpdateProfile/>}/> */}
         <Route exact path="/UploadMedia" element={<AuthCheck><UploadMedia/></AuthCheck>}/>
         <Route exact path="/chats" element={<AuthCheck><ActiveChats/></AuthCheck>}/>
+        <Route exact path="/search-result/:tag" element={<AuthCheck><SelectedTagPage/></AuthCheck>}/>
         {/* <Route exact path="/chats/:id" element={<AuthCheck><ChatPage/></AuthCheck>} /> */}
       </Routes>
     </div>

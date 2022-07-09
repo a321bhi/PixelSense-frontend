@@ -65,6 +65,17 @@ function connect(username,token) {
                
                connect(username,response.headers.authorization);
                navigate(props?.from, { replace: true });  
+              }else if(response.status===204){
+                toast.error('Username does not exist', {
+                    position: "top-center",
+                    autoClose: 2500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    pauseOnFocusLoss:false
+                    });
               }
             } 
            ).catch(err=>{

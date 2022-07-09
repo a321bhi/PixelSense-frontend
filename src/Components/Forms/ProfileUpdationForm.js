@@ -43,11 +43,25 @@ function ProfileUpdationForm(){
         'phoneNumber':countryCode+""+phone,
         'dateOfBirth':dateOfBirth,
       }
-      axios.patch(baseUrl+'/user/profile', user).then(
+      axios.patch(baseUrl+'/user/profile', user,
+      {
+        headers: { 
+          "Authorization":userCtx.getToken()
+        }
+    },).then(
        response=>{
          if(response.status===200){
-          console.log("User updated successfully");
-          alert("User updated successfully!");
+  
+          toast.info("User updated successfully!", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            pauseOnFocusLoss:false
+            });
           formInputs.forEach(formInput =>{
             formInput.current.value="";
           });

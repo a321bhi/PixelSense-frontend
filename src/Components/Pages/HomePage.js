@@ -3,8 +3,7 @@ import UserContext from "../Contexts/UserContext";
 import {useState, useContext, useEffect,useRef } from "react";
 import UploadMediaModal from "./UploadMediaModal";
 import axios from "axios";
-
-import { baseUrl } from "../../ConfigFiles/Urls";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
 import Button from 'react-bootstrap/Button';
@@ -12,91 +11,171 @@ import { Overlay } from "react-bootstrap";
 import SelectOrFollowMessage from "../UXMessages/SelectOrFollowMessage";
 
 function HomePage(){
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [currentPage,setCurrentPage] = useState(0);
+  let [hasMoreData,setHasMoreData] = useState(true);
   let userCtx = useContext(UserContext);
   let [feedArr,setFeedArr]=useState([]);
   let[tags,setTags] = useState([]);
   let [show,setShow]= useState(false);
   let target = useRef(null)
   let [feedPrefUpdated, setFeedPrefUpdated] =  useState(false);
-// (function(){
-//   console.log("username is "+userCtx.username);
-//   axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,
-//   ).then(response=>{userCtx.setTagsSelected(response.data?.feedPreference)}).catch(err=>console.log(err));
-// }());
-    const fetchTags= async ()=>{
-     await axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,)
-      .then(response=>{userCtx.setTagsSelected(response.data?.feedPreference)}).catch(err=>console.log(err));
+  const updateOneImage = async (mediaId) =>{
+    let updatedImage;
+    await axios.get("http://localhost:8102/media/"+mediaId,
+    {
+      headers: { 
+        "Authorization":userCtx.getToken()
+      }
+  },).then(res => updatedImage=res.data).catch(err=>console.log(err));
+    updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+
+    updatedImage.mediaComments?.sort((row1,row2)=>{
+      var date1 = new Date(row1.createdAt);
+      var date2 = new Date(row2.createdAt);
+      return date1.getTime()-date2.getTime();
+    });
+    updatedImage.mediaComments.forEach(row=>{
+      if(row.commentsOnComment?.length>0){
+        return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+      }
+    })
+    setFeedArr(feedArr.map(row=>{
+      if(row.mediaId===mediaId){
+        return updatedImage;
+      }else{
+        return row;
+      }
+    } ))
+  }
+    const fetchTags = ()=>{
+      axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,
+      {
+        headers: { 
+          "Authorization":userCtx.getToken()
+        }
+    },)
+      .then(response=>{setSelectedTags(response.data?.feedPreference);}).catch(err=>console.log(err));
       
       
-      axios.get("http://localhost:8102/media/tags")
+       axios.get("http://localhost:8102/media/tags",
+       {
+        headers: { 
+          "Authorization":userCtx.getToken()
+        }
+    },)
       .then(response=>{response.data = [...new Set(response.data)];setTags(response.data);}).catch(err=>console.log(err));
-      setFeedPrefUpdated(!feedPrefUpdated);
-    }
+    };
+  
     const fetchFeed = async ()=>{ 
       
-      let chosenTags=[...new Set(userCtx.tagsSelected)];
-      
+      let chosenTags=[...new Set(selectedTags)];
     
       if(chosenTags.length==0){
         return;
       }
+ 
       let totalChars=40;
       let queryTags= chosenTags.map(tag=>{
         totalChars+=tag.length+1;
-        if(totalChars<1900){
+        if(totalChars<1800){
           return tag;
         }
-      })        
-       await axios.get("http://localhost:8102/media/feed/"+queryTags.toString())
+      })
+      if(feedPrefUpdated){
+        setCurrentPage(0);
+      }
+       await axios.get("http://localhost:8102/media/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
+       {
+        headers: { 
+          "Authorization":userCtx.getToken()
+        }
+        },
+       )
         .then(response=>{
+
+          if(response.data?.length===0){
+            setHasMoreData(false);
+          }
                 response.data.map(media=>{
-                  media.mediaComments?.map(row=>{
-                    var date = new Date(row.createdAt);
-                    row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
-                    return row;
-                  })
+            
                   media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
-           
+
                   media.mediaComments?.sort((row1,row2)=>{
                     var date1 = new Date(row1.createdAt);
                     var date2 = new Date(row2.createdAt);
                     return date1.getTime()-date2.getTime();
                   });
+                  media.mediaComments.forEach(row=>{
+                    if(row.commentsOnComment?.length>0){
+                      return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+                    }
+                  })
+                  // if(media.mediaComments?.commentsOnCommment?.length>0){
+                  //   media.mediaComments?.commentsOnCommment?.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)});
+                  //   media.mediaComments?.commentsOnCommment?.sort((row1,row2)=>{
+                  //     var date1 = new Date(row1.createdAt);
+                  //     var date2 = new Date(row2.createdAt);
+                  //     return date1.getTime()-date2.getTime();
+                  //   });
+                  // }
                   return media;
                 })
-                setFeedArr(response.data);
+
+                response.data.sort((row1,row2)=>{
+                  var date1 = new Date(row1.mediaDate);
+                  var date2 = new Date(row2.mediaDate);
+                  return date2.getTime()-date1.getTime();
+                });
+                setCurrentPage(feedPrefUpdated?1:currentPage+1);
+                if(!feedPrefUpdated){
+                  setFeedArr([...feedArr,...response.data]);
+                }else{
+                  setFeedArr(response.data);
+                  
+                  setFeedPrefUpdated(false);
+                }
+
             }).catch(err=>console.log(err));
         }
-    function updateFeedPreference(){
-      if(!show){
+    const updateFeedPreference = async ()=>{
+      if(show){
       const user={
         username:userCtx.username,
-        feedPreference : userCtx.tagsSelected
+        feedPreference : selectedTags
       }
 
-      axios.post("http://localhost:8102/media/feed-preference",
+      await axios.post("http://localhost:8102/media/feed-preference",
       user,
       {
         headers:{
           "Authorization":userCtx.getToken()
         }
       })
-      .then(res=>console.log("feed preference updated"))
+      .then(res=>{
+         setFeedPrefUpdated(true);
+      }
+      )
       .catch(err=>console.log(err));
    
     }
-    setFeedPrefUpdated(!feedPrefUpdated);
+  
     }
-
+   
     useEffect(()=>{
         fetchTags();
-        fetchFeed();
-    },[])
+    },[]);
     useEffect(()=>{
       fetchFeed();
+    },[selectedTags])
+    
+    useEffect(()=>{
+      setHasMoreData(true);
+      fetchFeed();
     },[feedPrefUpdated])
+
 return (<div>
-  <div> <Button ref={target} onClick={() => {setShow(!show); updateFeedPreference();}}  >
+  <div> <Button ref={target} onClick={async () => {setShow(!show); updateFeedPreference();}}  >
     <FontAwesomeIcon icon={faAsterisk}></FontAwesomeIcon>
     </Button>
     <Overlay target={target.current} show={show} placement="right">
@@ -117,12 +196,12 @@ return (<div>
        {tags?.map(item=>{
           return <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id={"check"+item }
-                      defaultChecked={userCtx.tagsSelected.includes(item)?true:false}
+                      defaultChecked={selectedTags?.includes(item)?true:false}
                       onChange={()=>{
-                        if(userCtx.tagsSelected.includes(item)){
-                          userCtx.setTagsSelected(userCtx.tagsSelected.filter(i=>i!==item))
+                        if(selectedTags.includes(item)){
+                          setSelectedTags(selectedTags.filter(i=>i!==item))
                           }else{
-                            userCtx.setTagsSelected([...userCtx.tagsSelected,item])
+                            setSelectedTags([...selectedTags,item])
                           }
                         }
                       }/>
@@ -137,9 +216,19 @@ return (<div>
     }
   
     </Overlay> </div>
+    <InfiniteScroll
+  dataLength={feedArr?.length} //This is important field to render the next data
+  next={fetchFeed}
+  hasMore={hasMoreData}
+  loader={<h4>Loading...</h4>}
+  endMessage={
+    <p style={{ textAlign: 'center' }}>
+      <b>Yay! You have seen it all</b>
+    </p>
+  }>
+  
     <div className="row row-cols-1 row-cols-md-3 gx-2 mx-auto mt-2" 
-        style={{width:"90%"}}
- >
+        style={{width:"90%"}}>
           {feedArr?.length<1?<SelectOrFollowMessage/>:
     feedArr.map((item,key)=>{
         return (<CardAndModal
@@ -147,12 +236,13 @@ return (<div>
                   key={key} 
                   imageData={item}
                   refreshData={fetchFeed}
+                  updateOneImage={updateOneImage}
               />
               )
         })
    }
     
-    </div>
+    </div></InfiniteScroll>
     <UploadMediaModal/>
     </div>
 )

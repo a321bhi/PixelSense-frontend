@@ -1,6 +1,7 @@
 import { baseUrl } from "../../ConfigFiles/Urls";
 import axios from "axios";
 
+import { toast } from 'react-toastify';
 export const deleteImage = async (mediaId, refreshData, userCtx) => {
     // var bodyFormData = new FormData();
     // bodyFormData.append('mediaId', mediaId);
@@ -10,7 +11,17 @@ export const deleteImage = async (mediaId, refreshData, userCtx) => {
           "Authorization":userCtx.getToken()
         }
     }).then(response=>{("Deleted successfully");
-        alert("Deleted successfully")
+    toast.info("Deleted successfully", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      pauseOnFocusLoss:false
+      });
+    
         }).catch(err=>(err));
             refreshData();
 };

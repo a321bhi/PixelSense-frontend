@@ -32,14 +32,22 @@ let userCtx = useContext(UserContext);
 }}
  
 const getUsersFromContext= ()=>{
-  return [...userCtx?.userProfile?.follower,
-          ...userCtx?.userProfile?.following];
+  console.log(userCtx)
+  if(userCtx!==null){
+    return [...userCtx?.userProfile?.follower,
+      ...userCtx?.userProfile?.following];
+  }
 }
   const getAllChats= ()=>{
     const formData = new FormData();
   
     formData.append("username",userCtx.username);
-    axios.post("http://localhost:8103/getChats",formData).then(res=>{setAllChats(res.data);
+    axios.post("http://localhost:8103/getChats",formData,
+    {
+      headers: { 
+        "Authorization":userCtx.getToken()
+      }
+  },).then(res=>{setAllChats(res.data);
       setDataLoaded(true);
     }
     ).catch(err=>console.log(err));

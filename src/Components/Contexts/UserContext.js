@@ -14,6 +14,7 @@ export const UserContext = React.createContext({
     setUsername:()=>{},
     setToken:()=>{},
     getToken:()=>{},
+    getUsername:()=>{},
     setUserProfile:()=>{},
     setStompClient :()=>{}
   });
@@ -30,6 +31,7 @@ export const UserContext = React.createContext({
         setUsernameState(user);
         setTokenState(token);
         localStorage.setItem('token',token);
+        localStorage.setItem('username',user);
         let formData = new FormData();
         formData.append("username",user);
         axios.get(baseUrl+"/user/"+user,
@@ -53,6 +55,17 @@ export const UserContext = React.createContext({
         return tokenState;
       }else if(localStorage.getItem('token')!==null){
         return localStorage.getItem('token');
+      }else{
+        return null;
+      }
+    }
+    function getUsername(){
+      if(usernameState?.length>0){
+        return usernameState;
+      }else if(localStorage.getItem('username')!==null){
+        return localStorage.getItem('username');
+      }else{
+        return null;
       }
     }
     const context={
@@ -61,6 +74,7 @@ export const UserContext = React.createContext({
         userProfile:userProfileState,
         stompClient:stompClient,
         tagsSelected:tagsSelected,
+        getUsername:getUsername,
         setTagsSelected:setTagsSelected,
         toggleLogin:toggleLoginHandler,
         setUsername:setUsernameState,

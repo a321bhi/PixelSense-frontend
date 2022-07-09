@@ -8,12 +8,14 @@ import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart  as faHeartSolid} from '@fortawesome/free-solid-svg-icons';
 import MiniUserCard from './MiniUserCard';
 import { likeImage,unlikeImage } from '../ApiRequests/ImageApi';
+import LikedByModal from './LikedByModal';
 function CardView(props){
 
   const userCtx = useContext(UserContext);
   let [imageLoaded, setImageLoadedState] = useState(false);
   let [spinnerClasses,setSpinnerClasses] = useState("d-block mx-auto mt-3");
   let [imgClasses,setImgClasses] = useState("d-none");
+  let [showLikedByModal, setShowLikedByModal] =useState(false);
 
 useEffect(()=>{
 if(imageLoaded){
@@ -41,12 +43,17 @@ return (
                    <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
                   :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
                 }
-                <div className='mx-1'>
+                <div className='mx-1' role="button" onClick={()=>setShowLikedByModal(!showLikedByModal)}>
                   {props.imageData.likedBy?.length+" likes"}
                 </div>
               </div>
               </div>
         </div>
+        <LikedByModal
+        likedBy={props.imageData.likedBy}
+          show={showLikedByModal}
+          onHide={() => setShowLikedByModal(false)}
+        />
         </div>
 );
 }

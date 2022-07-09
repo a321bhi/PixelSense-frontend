@@ -1,6 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
+import { timeSince } from '../../ConfigFiles/timeSince.js';
+import React, { createRef, } from 'react';
 
-import React, { useEffect } from 'react';
 import { useRef } from 'react';
 import './ImageModal.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,15 +14,23 @@ import axios from 'axios';
 import { baseUrl } from '../../ConfigFiles/Urls';
 import CommentInputArea from './CommentInputArea';
 import { likeComment,unlikeComment,likeImage,unlikeImage,deleteImage } from '../ApiRequests/ImageApi';
+import LikedByModal from './LikedByModal';
+import CommentComponent from './CommentComponent';
+import MiniUserCard from './MiniUserCard.js';
 function ImageModal(props){
+  let [showLikedByModal, setShowLikedByModal] =useState(false);
+  let [commentId,setCommentId] = useState("");
   let captionPlaceHolder="Add a caption...";
   let [editable, setEditable] = useState(false);
   let [textAreaClass, setTextAreaClass] = useState("");
   let userCtx = useContext(UserContext);
   const newCommentHandle = useRef();
+  const replyToCommentHandle = useRef();
+  const [commentIdForReply,setCommentIdForReply] = useState("");
   const captionHandle = useRef();
   var date = new Date(props.imageData.mediaDate);
-
+const arrOfRefs = useRef([]);
+arrOfRefs.current = props.imageData.mediaComments.map((item,i)=>arrOfRefs.current[i]??createRef());
  function addComment(){
    let formData = new FormData();
    let commentContent = newCommentHandle.current.value;
@@ -31,8 +40,9 @@ function ImageModal(props){
      axios.post(baseUrl+"/media/comment",formData,
        {
            headers:{"Authorization":userCtx.getToken()}
-         }).then(res=>{props.refreshData();newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
+         }).then(res=>{props.updateOneImage(props.imageData.mediaId);newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
    }}
+ 
    
    function updateDescription(){
     let text = captionHandle?.current?.innerHTML;
@@ -48,10 +58,9 @@ function ImageModal(props){
             headers: { 
                 "Authorization":userCtx.getToken(),
             }
-        }).then(response=>{console.log(response);props.refreshData();})
+        }).then(response=>{console.log(response);props.updateOneImage(props.imageData.mediaId);})
         .catch(err=>{
             console.log(err);
-            // setDescription(bioPlaceHolder);
           }
           );
           }
@@ -66,24 +75,45 @@ function ImageModal(props){
       setEditable(false);
   }
 }
+const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
  function deleteComment(commentId){
-  // let formData = new FormData();
-  //  formData.append("commentId",commentId);
     axios.delete(baseUrl+"/media/comment/"+commentId,
       {
           headers:{"Authorization":userCtx.getToken()}
-        }).then(res=>{props.refreshData()}).catch(err=>console.log(err)) 
+        }).then(res=>{props.updateOneImage(props.imageData.mediaId)}).catch(err=>console.log(err)) 
   }
-
+  function replyToComment(commentId,keyForHandle){
+    let formData = new FormData();
+    // console.log(arrOfRefs.current[keyForHandle].current.value+" "+keyForHandle)
+    let commentContent = arrOfRefs.current[keyForHandle].current.value;
+  
+    if(commentContent.length>0){
+     formData.append("commentId",commentId) 
+     formData.append("commentContent",commentContent);
+      axios.post(baseUrl+"/comment/comment",formData,
+        {
+            headers:{"Authorization":userCtx.getToken()}
+          }).then(res=>{props.updateOneImage(props.imageData.mediaId);arrOfRefs.current[keyForHandle].current.value=""}).catch(err=>console.log(err)) 
+    }}
+    function deleteReplyToComment(commentId){
+        axios.delete(baseUrl+"/comment/comment/"+commentId,
+          {
+              headers:{"Authorization":userCtx.getToken()}
+            }).then(res=>{props.updateOneImage(props.imageData.mediaId)}).catch(err=>console.log(err)) 
+      }
    return props.showModal?<Modal
+   className="bg-dark bg-opacity-75"
    size="xl"
         show={props.showModal}
         onHide={props.handleClose}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
+      <div className='d-flex'>
+      <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.username:props.usernamePostedBy}/></div>
       <div className="text-end pt-3 pe-3" style={{width:"100%"}}>
         <button type="button" className="btn-close" aria-label="Close" onClick={props.handleClose}/>
+      </div>
       </div>
       <Modal.Body className="d-md-flex d-block" style={{width:"100%"}}> 
       <div className='p-3 custom-image-div' >
@@ -92,8 +122,12 @@ function ImageModal(props){
       
       <div className='p-3 custom-comments-div'>
         {(props.imageData.likedBy?.includes(userCtx.username))?
-          <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
-          :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
+          <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeImage(props.imageData.mediaId, userCtx);
+            props.updateOneImage(props.imageData.mediaId);    
+          }} size="2x"/>
+          :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>{likeImage(props.imageData.mediaId,userCtx);
+            props.updateOneImage(props.imageData.mediaId);
+          }} size="2x"/>
         }
        {props.imageData.likedBy?.length+" likes"}
        <div className='float-end'>
@@ -107,7 +141,6 @@ function ImageModal(props){
                   role="button"
                   className="dropdown-item"  
                   onClick={()=>{toggleTextArea()}}
-                        // onClick={()=>{deleteImage(props.imageData.mediaId,props.refreshData, userCtx);props.handleClose();}} 
                         >Update Caption
                       </div>
                   </li> 
@@ -146,12 +179,14 @@ function ImageModal(props){
         <div className='fs-5'>Comments</div>
           <div className='overflow-auto p-2' style={{maxHeight:"500px"}}>
           {props.imageData.mediaComments?.length>0?
-              <ul className='list-group'>
-              
+              <ul className='list-group container'>
                     {props.imageData.mediaComments.map(
-                    (item,i)=><li key={i} className='list-group-item '>
-                      <span className='fw-bold me-3'>{item.commentByUser.userName}</span>
+                    (item,i)=><li key={i} className='list-group-item ms-1 d-flex row'>
+                      <div className='col-10 col-md-11'>
+                      <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser.userName}/></span>
                       {item.commentContent}
+                      </div>
+                      <div className='col-2 col-md-1'>
                       {item.commentByUser.userName===userCtx.username?
                           <div className="btn-group align-top float-end dropstart">
                             <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
@@ -171,30 +206,56 @@ function ImageModal(props){
 
                       :""  
                       }
-                      {
+                    </div>
+                    <div className='d-flex justify-content-between mt-2'>
+                      
+                    {
                         <div className='text-muted'>
-                          {item.createdAt}
+                          {timeSince(item.createdAt)}
                         </div>
                       }
+                      {item.commentsOnComment?.length>0?<div role="button" onClick={()=>commentId!=item.commentId?setCommentId(item.commentId):setCommentId("")}>{
+                      commentId===item.commentId?"Hide replies":"Show replies"}</div>:""}
+                      {<div 
+                      role="button" onClick={()=>commentIdForReply===item.commentId?setCommentIdForReply(""):setCommentIdForReply(item.commentId)}>Reply</div>}
+           
               <div className="d-flex text-muted">
                 {  (item.commentLikedBy?.includes(userCtx.username))?
-                   <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeComment(item.commentId,props.refreshData, userCtx)} size="2x"/>
-                  :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeComment(item.commentId,props.refreshData, userCtx)} size="2x"/>
+                   <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeComment(item.commentId,updateOneImage,userCtx);}} size="2x"/>
+                  :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>{likeComment(item.commentId,updateOneImage,userCtx);props.updateOneImage(props.imageData.mediaId)}} size="2x"/>
                 }
-                <div className='mx-1'>
+                <div className='mx-1'  role="button" onClick={()=>setShowLikedByModal(!showLikedByModal)}>
                   {item.commentLikedBy?item.commentLikedBy.length+" likes":"0"+" likes"}
                 </div>
               </div>
+              </div>
+              {commentId===item.commentId?<CommentComponent refreshData={props.refreshData} commentData={item.commentsOnComment}
+                      deleteComment={deleteReplyToComment}
+                      updateOneImage={()=>props.updateOneImage(props.imageData.mediaId)}
+                      ></CommentComponent>:""}
+                {commentIdForReply===item.commentId?
+              <CommentInputArea 
+              commentId={commentIdForReply} 
+              addComment={replyToComment}
+              keyForHandle={i}
+              newCommentHandle={arrOfRefs.current[i]}/> :""
+            }
                       </li>
                     )
                   }
               </ul>
           :""}
           </div>
+          {/* <CommentInputArea commentId={commentIdForReply} addComment={replyToComment} newCommentHandle={replyToCommentHandle}/>  */}
         <CommentInputArea addComment={addComment} newCommentHandle={newCommentHandle}/>  
         </div>
         </div>
         </Modal.Body>
+        <LikedByModal
+        likedBy={props.imageData.likedBy}
+          show={showLikedByModal}
+          onHide={() => setShowLikedByModal(false)}
+        />
     </Modal>:""
 }
 

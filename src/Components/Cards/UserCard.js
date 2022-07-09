@@ -1,13 +1,18 @@
 import UserContext from "../Contexts/UserContext";
 import { useContext, useEffect, useRef, useState } from "react";
-import {faPenToSquare, } from "@fortawesome/free-solid-svg-icons";
+import {faPenToSquare,faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import UploadMediaModal from "../Pages/UploadMediaModal";
 import FollowersModal from "./FollowersModal";
-import Button from "react-bootstrap/Button";
+import StoryCarousel from "./StoryCarousel";
+
 function UserCard(props){
+    let [showStories,setShowStories] = useState(false);
+    let [storyBorder,setStoryBorder] = useState({height:"17vh",width:"18vh"})
+    const [userStories, setUserStories] = useState([]);
+    const [archivedStories, setArchivedStories] = useState([]);
     const [selectedTab, setSelectedTab] = useState("");
     const [modalShow, setModalShow] = useState(false);
     const bioPlaceHolder = "Add a bio..";
@@ -17,6 +22,34 @@ function UserCard(props){
     const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?bioPlaceHolder:""));
     const [editable,setEditable] = useState(false);
     // const toggleEdit = ()=> setEditable(!editable);
+    const fetchStories = ()=>{
+        axios.get("http://localhost:8102/media/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
+            {
+                headers: { 
+                    "Authorization":userCtx.getToken(),
+                }
+            }).then(response=>{if(response?.data?.length>0){
+                setUserStories(response.data);
+                setStoryBorder({height:"17vh",width:"18vh",
+                border:" 3px solid",
+                borderRadius:"30px",
+                borderImage:"url('./borderImage.jpg') 30 stretch",
+                 })
+                 
+                }else{
+                    setStoryBorder({height:"17vh",width:"18vh",})
+
+                }
+            }).catch(err=>console.log(err));
+    }
+    const fetchArchivedStories = ()=>{
+        axios.get("http://localhost:8102/media/archived-stories/"+userCtx.getUsername(),
+            {
+                headers: { 
+                    "Authorization":userCtx.getToken(),
+                }
+            }).then(response=>{setArchivedStories(response.data)}).catch(err=>console.log(err));
+    }
     const followUser=()=>{
         console.log(props)
         const formData = new FormData();
@@ -73,7 +106,11 @@ function UserCard(props){
     }
     useEffect(()=>{
         toggleTextArea();
+        
     },[editable]);
+    useEffect(()=>{
+        fetchStories();
+    },[])
     function handleDescription(){
         if(description===bioPlaceHolder){
             setDescription("");
@@ -82,11 +119,12 @@ function UserCard(props){
     return <div className="w-100 border-top border-bottom" style={{maxHeight:"50vh"}}>
         <div className="d-md-flex d-block w-100 mt-5 p-3">
             <div className="w-25 mx-md-2 mx-auto">
-                <div className="position-relative mx-auto" style={{height:"15vh",width:"15vh"}}>
-                <img 
+                <div className="position-relative mx-auto p-2" style={storyBorder}>
+                <img role="button"
                     className="mx-auto rounded d-block " 
                     src={"data:image/jpg;base64,"+props.userProfile.profilePicAsBase64}
                     alt="Image here" 
+                    onClick={()=>setShowStories(true)}
                     style={{height:"15vh",width:"15vh",objectFit:"cover"}}
                     
                 />{props.currentUser?
@@ -153,7 +191,42 @@ function UserCard(props){
                     {description}
                 </div>
             </div>  
-            
+            {/* User Edit part */}
+
+
+
+            {props.currentUser?
+          <div className="btn-group" style={{width:"30px"}}>
+                <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                  <FontAwesomeIcon icon={faEllipsisVertical}></FontAwesomeIcon>
+                </div>
+                <ul className="dropdown-menu" aria-labelledby="editImage">
+                <li><div 
+                  role="button"
+                  className="dropdown-item"  
+                  onClick={()=>{}}
+                        >Update Profile
+                      </div>
+                  </li> 
+                  <li><div 
+                  role="button"
+                  className="dropdown-item"  
+                        onClick={()=>{}} 
+                        >Upload Story
+                      </div>
+                  </li>            
+                </ul>
+              </div>
+              :""
+          }
+
+
+
+
+
+{/* ends */}
+
+
             </div>
         </div>
         <UploadMediaModal profilePic={true} multiModal={"uploadMediaModalProfilePic"}
@@ -164,6 +237,11 @@ function UserCard(props){
         following={props.userProfile.following}
           show={modalShow}
           onHide={() => setModalShow(false)}
+        />
+        <StoryCarousel  
+            show={showStories}
+            onHide={() => setShowStories(false)}
+            images={userStories}
         />
     </div>
 }

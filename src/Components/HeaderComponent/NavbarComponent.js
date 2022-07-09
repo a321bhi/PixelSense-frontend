@@ -8,8 +8,12 @@ import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { faCameraRetro } from "@fortawesome/free-solid-svg-icons";
 import { faIdCard} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
+import UserContext from "../Contexts/UserContext";
+import { useContext } from "react";
 import axios from "axios";
+import UploadUserStory from "../Pages/UploadUserStory";
 function NavbarComponent(){
+  const userCtx = useContext(UserContext);
   const [searchResult, setSearchResult] = useState({});
   const searchBarHandle = useRef();
     const navigate = useNavigate();
@@ -20,10 +24,17 @@ function profilePageClick(){
     navigate('/profile',);
 }
 function search(){
-  console.log(searchBarHandle?.current?.value)
   if(searchBarHandle?.current?.value!==""){
-  axios.get("http://localhost:8102/media/search/"+searchBarHandle.current.value)
-  .then(response =>{ setSearchResult(response.data);console.log(response.data)}).catch(err=>console.log(err));
+  axios.get("http://localhost:8102/media/search/"+searchBarHandle.current.value,
+  {
+    headers: { 
+      "Authorization":userCtx.getToken()
+    }
+},)
+  .then(response =>{ 
+    response.data.mediaTagsOutput = [...new Set(response.data.mediaTagsOutput)];
+    setSearchResult(response.data);
+  }).catch(err=>console.log(err));
   }else{
     setSearchResult({});
   }
@@ -60,12 +71,13 @@ useEffect(()=>{
             <ul className="dropdown-menu" style={{left:"21%",width:"25vw",maxHeight:"45vh",overflowY:"auto"}}  aria-labelledby="dropdownMenuClickableInside">
             <li className="text-center fw-bold dropdown-item">Tags</li>
             {searchResult?.mediaTagsOutput?.length>0 && searchBarHandle?.current?.value!==""?
-                  searchResult?.mediaTagsOutput?.map(output=> <li><a class="dropdown-item text-primary" href="#">#{output}</a></li>)
+                  searchResult?.mediaTagsOutput?.map(output=> <li><a role="button" class="dropdown-item text-primary" onClick={()=>{ navigate("/search-result/"+output)}}>#{output}</a></li>)
                   :<li  className="text-center">No tags found</li>
             }
             <div className="border"></div>
             <li className="text-center fw-bold dropdown-item">Users</li>
             {searchResult?.usernameOutput?.length>0 && searchBarHandle?.csurrent?.value!==""?
+
                   searchResult?.usernameOutput?.map(output=> <li><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
                   :<li className="text-center">No users found</li>
                   
@@ -75,7 +87,32 @@ useEffect(()=>{
           <Nav className="justify-content-end flex-grow-1 pe-3 text-light">
            
             <Nav.Link type="button" onClick={messageIconClick}><FontAwesomeIcon icon={faCommentDots} size="2x"/></Nav.Link>
-            <Nav.Link data-bs-toggle="modal" data-bs-target="#uploadMediaModal"><FontAwesomeIcon icon={faCameraRetro} size="2x"/></Nav.Link>
+            
+            {/* story start */}
+
+            <div className="btn-group">
+                <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                  <Nav.Link ><FontAwesomeIcon icon={faCameraRetro} size="2x"/></Nav.Link>
+                </div>
+                <ul className="dropdown-menu" aria-labelledby="editImage">
+                <li><div 
+                  role="button"
+                  data-bs-toggle="modal" data-bs-target="#uploadMediaModal"
+                  className="dropdown-item"  
+                        >Upload Media
+                      </div>
+                  </li> 
+                  <li><div 
+                  role="button"
+                  className="dropdown-item"  
+                  data-bs-toggle="modal" data-bs-target="#uploadUserStoryModal"
+                        >Upload Story
+                      </div>
+                  </li>            
+                </ul>
+              </div>
+
+{/* end */}
             <Nav.Link onClick={profilePageClick}><FontAwesomeIcon icon={faIdCard} size="2x"/></Nav.Link>
             <Nav.Link><LogoutSwitch/></Nav.Link>
           </Nav>
@@ -84,6 +121,7 @@ useEffect(()=>{
         </Offcanvas.Body>
       </Navbar.Offcanvas>
     </Container>
+    <UploadUserStory/>
   </Navbar>
 }
 export default NavbarComponent;

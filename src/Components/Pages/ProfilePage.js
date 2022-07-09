@@ -16,8 +16,9 @@ function ProfilePage(){
   const [mediaLoaded,setMediaLoaded] = useState(false);
 
   function determineCurrentUser(){
-     let decision = id?true:false;
-     if(decision){
+
+     let decisionRequired = id===undefined?false:true;
+     if(decisionRequired){
         if(id===userCtx.username){
           return true;
         }else{
@@ -27,13 +28,15 @@ function ProfilePage(){
         return true;
      }
   }
-  const [currentUser,setCurrentUser] = useState(determineCurrentUser())
+  let currentUser = determineCurrentUser();
+  
     const [userProfile, setUserProfile] = useState({});
     const [arr, setArr] = useState([]);
    
+
     const getImages = async () => {
-      let queryUsername = currentUser?userCtx.username:id;
-    
+
+      let queryUsername = determineCurrentUser()?userCtx.username:id;
        await axios.get(baseUrl+"/media/all/"+queryUsername,
         {
             headers: { 
@@ -42,26 +45,68 @@ function ProfilePage(){
         },
         ).then(
           response=>{
-          
             response.data.map(media=>{
-              media.mediaComments.map(row=>{
-                var date = new Date(row.createdAt);
-                row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
-                return row;
-              })
+
               media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)});
               media.mediaComments.sort((row1,row2)=>{
                 var date1 = new Date(row1.createdAt);
                 var date2 = new Date(row2.createdAt);
                 return date1.getTime()-date2.getTime();
               });
+              
+              media.mediaComments.forEach(row=>{
+                if(row.commentsOnComment?.length>0){
+                  return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+                }
+                // row.commentsOnComment?.sort((row1,row2)=>{
+                //              var date1 = new Date(row1.createdAt);
+                //   var date2 = new Date(row2.createdAt);
+                //   return date1.getTime()-date2.getTime();
+                // })
+              })
+              
+
               return media;
             })
+            response.data.sort((row1,row2)=>{
+              var date1 = new Date(row1.mediaDate);
+              var date2 = new Date(row2.mediaDate);
+              return date2.getTime()-date1.getTime();
+            });
             setArr(response.data);
           setMediaLoaded(true);
         }).catch(err=>console.log(err))
       };
-      
+      const updateOneImage = async (mediaId) =>{
+        let updatedImage;
+        await axios.get("http://localhost:8102/media/"+mediaId,
+        {
+          headers: { 
+            "Authorization":userCtx.getToken()
+          }
+      },
+        ).then(res => updatedImage=res.data).catch(err=>console.log(err));
+        console.log(updatedImage);
+        updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+    
+        updatedImage.mediaComments?.sort((row1,row2)=>{
+          var date1 = new Date(row1.createdAt);
+          var date2 = new Date(row2.createdAt);
+          return date1.getTime()-date2.getTime();
+        });
+        updatedImage.mediaComments.forEach(row=>{
+          if(row.commentsOnComment?.length>0){
+            return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+          }
+        })
+        setArr(arr.map(row=>{
+          if(row.mediaId===mediaId){
+            return updatedImage;
+          }else{
+            return row;
+          }
+        } ))
+      }
       const fetchProfile = async ()=>{
         
        await axios.get(baseUrl+"/user/"+(currentUser?userCtx.username:id),
@@ -83,11 +128,16 @@ function ProfilePage(){
         getImages();
       },[]);
       useEffect(()=>{
+        fetchProfile();
+        getImages();
+      },[id])
+      useEffect(()=>{
       },[profileLoaded])
       // useEffect(()=>{
       //     fetchProfile();
       //     getImages();
       //   },[]);
+
 return <div className="mx-auto" style={{width:"85%"}}>
 {profileLoaded&&
   <UserCard  
@@ -107,6 +157,7 @@ return <div className="mx-auto" style={{width:"85%"}}>
                   imageData={item}
                   profilePage={true}
                   refreshData={getImages}
+                  updateOneImage={updateOneImage}
                 />)})
     :currentUser?<NoProfileMedia/>:<NoMedia/>}
 </div>
