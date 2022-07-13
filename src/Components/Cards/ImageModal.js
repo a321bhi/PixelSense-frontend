@@ -1,7 +1,6 @@
 import Modal from 'react-bootstrap/Modal';
 import { timeSince } from '../../ConfigFiles/timeSince.js';
 import React, { createRef, } from 'react';
-
 import { useRef } from 'react';
 import './ImageModal.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,14 +17,13 @@ import LikedByModal from './LikedByModal';
 import CommentComponent from './CommentComponent';
 import MiniUserCard from './MiniUserCard.js';
 function ImageModal(props){
+  let userCtx = useContext(UserContext);
   let [showLikedByModal, setShowLikedByModal] =useState(false);
   let [commentId,setCommentId] = useState("");
-  let captionPlaceHolder="Add a caption...";
   let [editable, setEditable] = useState(false);
   let [textAreaClass, setTextAreaClass] = useState("");
-  let userCtx = useContext(UserContext);
+
   const newCommentHandle = useRef();
-  const replyToCommentHandle = useRef();
   const [commentIdForReply,setCommentIdForReply] = useState("");
   const captionHandle = useRef();
   var date = new Date(props.imageData.mediaDate);
@@ -110,7 +108,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       centered
     >
       <div className='d-flex'>
-      <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.username:props.usernamePostedBy}/></div>
+      <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.getUsername():props.usernamePostedBy}/></div>
       <div className="text-end pt-3 pe-3" style={{width:"100%"}}>
         <button type="button" className="btn-close" aria-label="Close" onClick={props.handleClose}/>
       </div>
@@ -120,12 +118,14 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       <img alt={"image"} className="imgModal"  src={props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:""}/>
       </div>
       
-      <div className='p-3 custom-comments-div'>
-        {(props.imageData.likedBy?.includes(userCtx.username))?
-          <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeImage(props.imageData.mediaId, userCtx);
+      <div className='p-3 custom-comments-div ' >
+        {(props.imageData.likedBy?.includes(userCtx.getUsername()))?
+          <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeImage(props.imageData.mediaId, updateOneImage,userCtx);
             props.updateOneImage(props.imageData.mediaId);    
           }} size="2x"/>
-          :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>{likeImage(props.imageData.mediaId,userCtx);
+          :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>{
+            
+            likeImage(props.imageData.mediaId,updateOneImage,userCtx);
             props.updateOneImage(props.imageData.mediaId);
           }} size="2x"/>
         }
@@ -175,9 +175,9 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       <div className='text-muted'>{props.imageData.mediaDate?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
         
 
-        <div className='d-block'>
-        <div className='fs-5'>Comments</div>
-          <div className='overflow-auto p-2' style={{maxHeight:"500px"}}>
+        <div className='d-block ' >
+        <div className='fs-5' >Comments</div>
+          <div className='overflow-auto '  style={{height:"50vh"}}>
           {props.imageData.mediaComments?.length>0?
               <ul className='list-group container'>
                     {props.imageData.mediaComments.map(

@@ -9,6 +9,7 @@ import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
 import Button from 'react-bootstrap/Button';
 import { Overlay } from "react-bootstrap";
 import SelectOrFollowMessage from "../UXMessages/SelectOrFollowMessage";
+import { feedUrl } from "../../ConfigFiles/Urls";
 
 function HomePage(){
   const [selectedTags, setSelectedTags] = useState([]);
@@ -22,7 +23,7 @@ function HomePage(){
   let [feedPrefUpdated, setFeedPrefUpdated] =  useState(false);
   const updateOneImage = async (mediaId) =>{
     let updatedImage;
-    await axios.get("http://localhost:8102/media/"+mediaId,
+    await axios.get(feedUrl+"/media/"+mediaId,
     {
       headers: { 
         "Authorization":userCtx.getToken()
@@ -37,6 +38,11 @@ function HomePage(){
     });
     updatedImage.mediaComments.forEach(row=>{
       if(row.commentsOnComment?.length>0){
+        row.commentsOnComment?.sort((row1,row2)=>{
+          var date1 = new Date(row1.createdAt);
+          var date2 = new Date(row2.createdAt);
+          return date1.getTime()-date2.getTime();
+        })
         return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
       }
     })
@@ -49,7 +55,7 @@ function HomePage(){
     } ))
   }
     const fetchTags = ()=>{
-      axios.get("http://localhost:8102/media/feed-preference/"+userCtx.username,
+      axios.get(feedUrl+"/media/feed-preference/"+userCtx.getUsername(),
       {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -58,7 +64,7 @@ function HomePage(){
       .then(response=>{setSelectedTags(response.data?.feedPreference);}).catch(err=>console.log(err));
       
       
-       axios.get("http://localhost:8102/media/tags",
+       axios.get(feedUrl+"/media/tags",
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -74,7 +80,6 @@ function HomePage(){
       if(chosenTags.length==0){
         return;
       }
- 
       let totalChars=40;
       let queryTags= chosenTags.map(tag=>{
         totalChars+=tag.length+1;
@@ -82,10 +87,11 @@ function HomePage(){
           return tag;
         }
       })
+      console.log(queryTags.toString());
       if(feedPrefUpdated){
         setCurrentPage(0);
       }
-       await axios.get("http://localhost:8102/media/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
+       await axios.get(feedUrl+"/media/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -93,7 +99,6 @@ function HomePage(){
         },
        )
         .then(response=>{
-
           if(response.data?.length===0){
             setHasMoreData(false);
           }
@@ -108,17 +113,14 @@ function HomePage(){
                   });
                   media.mediaComments.forEach(row=>{
                     if(row.commentsOnComment?.length>0){
+                      row.commentsOnComment?.sort((row1,row2)=>{
+                        var date1 = new Date(row1.createdAt);
+                        var date2 = new Date(row2.createdAt);
+                        return date1.getTime()-date2.getTime();
+                      })
                       return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
                     }
                   })
-                  // if(media.mediaComments?.commentsOnCommment?.length>0){
-                  //   media.mediaComments?.commentsOnCommment?.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)});
-                  //   media.mediaComments?.commentsOnCommment?.sort((row1,row2)=>{
-                  //     var date1 = new Date(row1.createdAt);
-                  //     var date2 = new Date(row2.createdAt);
-                  //     return date1.getTime()-date2.getTime();
-                  //   });
-                  // }
                   return media;
                 })
 
@@ -141,11 +143,11 @@ function HomePage(){
     const updateFeedPreference = async ()=>{
       if(show){
       const user={
-        username:userCtx.username,
+        username:userCtx.getUsername(),
         feedPreference : selectedTags
       }
 
-      await axios.post("http://localhost:8102/media/feed-preference",
+      await axios.post(feedUrl+"/media/feed-preference",
       user,
       {
         headers:{
@@ -164,6 +166,7 @@ function HomePage(){
    
     useEffect(()=>{
         fetchTags();
+        fetchFeed();
     },[]);
     useEffect(()=>{
       fetchFeed();
@@ -217,13 +220,13 @@ return (<div>
   
     </Overlay> </div>
     <InfiniteScroll
-  dataLength={feedArr?.length} //This is important field to render the next data
+  dataLength={feedArr?.length}
   next={fetchFeed}
   hasMore={hasMoreData}
   loader={<h4>Loading...</h4>}
   endMessage={
     <p style={{ textAlign: 'center' }}>
-      <b>Yay! You have seen it all</b>
+      <b>End of feed</b>
     </p>
   }>
   

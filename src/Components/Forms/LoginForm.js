@@ -3,7 +3,7 @@ import { useContext, useRef } from 'react';
 import UserContext from '../Contexts/UserContext';
 import RegistrationForm from "./RegistrationForm";
 import axios from 'axios';
-import { baseUrl } from '../../ConfigFiles/Urls';
+import { baseUrl, chatServiceUrl } from '../../ConfigFiles/Urls';
 import SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,7 +20,7 @@ let maxTries = 5;
 
 
 function connect(username,token) {
-    var socket = new SockJS('http://localhost:8103/gs-guide-websocket');
+    var socket = new SockJS(chatServiceUrl+'/gs-guide-websocket');
     let stompClient = Stomp.over(socket);
     userCtx.setStompClient(stompClient);
     stompClient.connect( {headers:{ "Authorization":token}}, function (frame) {

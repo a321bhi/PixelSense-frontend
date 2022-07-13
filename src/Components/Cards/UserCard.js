@@ -7,9 +7,11 @@ import { baseUrl } from "../../ConfigFiles/Urls";
 import UploadMediaModal from "../Pages/UploadMediaModal";
 import FollowersModal from "./FollowersModal";
 import StoryCarousel from "./StoryCarousel";
-
+import ProfileUpdationForm from "../Forms/ProfileUpdationForm";
+import { feedUrl } from "../../ConfigFiles/Urls";
 function UserCard(props){
     let [showStories,setShowStories] = useState(false);
+    let [showArchivedStories,setShowArchivedStories] = useState(false);
     let [storyBorder,setStoryBorder] = useState({height:"17vh",width:"18vh"})
     const [userStories, setUserStories] = useState([]);
     const [archivedStories, setArchivedStories] = useState([]);
@@ -21,9 +23,8 @@ function UserCard(props){
     const [textAreaClass,setTextAreaClass] = useState("w-75 p-2 me-3 fst-italic");
     const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?bioPlaceHolder:""));
     const [editable,setEditable] = useState(false);
-    // const toggleEdit = ()=> setEditable(!editable);
     const fetchStories = ()=>{
-        axios.get("http://localhost:8102/media/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
+        axios.get(feedUrl+"/media/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -33,7 +34,7 @@ function UserCard(props){
                 setStoryBorder({height:"17vh",width:"18vh",
                 border:" 3px solid",
                 borderRadius:"30px",
-                borderImage:"url('./borderImage.jpg') 30 stretch",
+                borderImage:"url('./borderImage.jpg') 10 round",
                  })
                  
                 }else{
@@ -43,7 +44,7 @@ function UserCard(props){
             }).catch(err=>console.log(err));
     }
     const fetchArchivedStories = ()=>{
-        axios.get("http://localhost:8102/media/archived-stories/"+userCtx.getUsername(),
+        axios.get(feedUrl+"/media/archived-stories/"+userCtx.getUsername(),
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -51,7 +52,7 @@ function UserCard(props){
             }).then(response=>{setArchivedStories(response.data)}).catch(err=>console.log(err));
     }
     const followUser=()=>{
-        console.log(props)
+    
         const formData = new FormData();
             formData.set("usernameToFollow",props.userProfile.username);
             axios.post(baseUrl+"/user/follow",formData,
@@ -59,17 +60,15 @@ function UserCard(props){
                 headers: { 
                     "Authorization":userCtx.getToken(),
                 }
-            }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
+            }).then(response=>{props.fetchProfile();}).catch(err=>console.log(err));
     }
     const unfollowUser=()=>{
-        // const formData = new FormData();
-        //     formData.set("usernameToUnfollow",props.userProfile.username);
             axios.delete(baseUrl+"/user/follow/"+props.userProfile.username,
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
                 }
-            }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
+            }).then(response=>{props.fetchProfile();}).catch(err=>console.log(err));
     }
     const toggleTextArea=()=>{
         if(editable){
@@ -87,7 +86,7 @@ function UserCard(props){
                 headers: { 
                     "Authorization":userCtx.getToken(),
                 }
-            }).then(response=>{console.log(response);props.fetchProfile();})
+            }).then(response=>{props.fetchProfile();})
             .catch(err=>{
                 console.log(err);
                 setDescription(bioPlaceHolder);
@@ -102,7 +101,7 @@ function UserCard(props){
                 headers: { 
                     "Authorization":userCtx.getToken(),
                 }
-            }).then(response=>{console.log(response);props.fetchProfile();}).catch(err=>console.log(err));
+            }).then(response=>{props.fetchProfile();}).catch(err=>console.log(err));
     }
     useEffect(()=>{
         toggleTextArea();
@@ -110,6 +109,7 @@ function UserCard(props){
     },[editable]);
     useEffect(()=>{
         fetchStories();
+        fetchArchivedStories();
     },[])
     function handleDescription(){
         if(description===bioPlaceHolder){
@@ -117,14 +117,14 @@ function UserCard(props){
         }
     }
     return <div className="w-100 border-top border-bottom" style={{maxHeight:"50vh"}}>
-        <div className="d-md-flex d-block w-100 mt-5 p-3">
-            <div className="w-25 mx-md-2 mx-auto">
+        <div className="d-md-flex d-block w-100 mt-2 p-3">
+            <div className="mx-auto d-flex w-25 w-xs-100">
                 <div className="position-relative mx-auto p-2" style={storyBorder}>
                 <img role="button"
-                    className="mx-auto rounded d-block " 
+                    className="mx-auto d-block " 
                     src={"data:image/jpg;base64,"+props.userProfile.profilePicAsBase64}
                     alt="Image here" 
-                    onClick={()=>setShowStories(true)}
+                    onClick={()=>{if(userStories.length>0){setShowStories(true)}}}
                     style={{height:"15vh",width:"15vh",objectFit:"cover"}}
                     
                 />{props.currentUser?
@@ -153,8 +153,33 @@ function UserCard(props){
             :""
             }
                 </div>
+                
+             {props.currentUser?
+          <div className="w-25 d-block d-md-none text-end" >
+                <div type="button" style={{width:"30px"}} id="editProfile" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                  <FontAwesomeIcon icon={faEllipsisVertical}></FontAwesomeIcon>
+                </div>
+                <ul className="dropdown-menu" aria-labelledby="editProfile">
+                <li><div 
+                  role="button"
+                  className="dropdown-item"  
+                  data-bs-toggle="modal" data-bs-target="#profileUpdateModal"
+                        >Update profile
+                      </div>
+                  </li> 
+                  <li><div 
+                  role="button"
+                  className="dropdown-item"  
+                        onClick={()=>setShowArchivedStories(true)} 
+                        >View archived stories
+                      </div>
+                  </li>            
+                </ul>
+              </div>
+              :""
+          }
              </div>
-             <div className="mx-2 w-75 mt-2">
+             <div className="mx-2 w-50">
                 <div className="d-flex">
                     <div className="fs-3 w-25">{props.userProfile.username}</div>
                     {props.currentUser?"":
@@ -191,28 +216,29 @@ function UserCard(props){
                     {description}
                 </div>
             </div>  
-            {/* User Edit part */}
+            </div>
+             {/* User Edit part */}
 
 
 
-            {props.currentUser?
-          <div className="btn-group" style={{width:"30px"}}>
-                <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+             {props.currentUser?
+          <div className="w-25 d-none d-md-block" >
+                <div type="button" style={{width:"30px"}} id="editProfile" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                   <FontAwesomeIcon icon={faEllipsisVertical}></FontAwesomeIcon>
                 </div>
-                <ul className="dropdown-menu" aria-labelledby="editImage">
+                <ul className="dropdown-menu" aria-labelledby="editProfile">
                 <li><div 
                   role="button"
                   className="dropdown-item"  
-                  onClick={()=>{}}
-                        >Update Profile
+                  data-bs-toggle="modal" data-bs-target="#profileUpdateModal"
+                        >Update profile
                       </div>
                   </li> 
                   <li><div 
                   role="button"
                   className="dropdown-item"  
-                        onClick={()=>{}} 
-                        >Upload Story
+                        onClick={()=>setShowArchivedStories(true)} 
+                        >View archived stories
                       </div>
                   </li>            
                 </ul>
@@ -225,9 +251,6 @@ function UserCard(props){
 
 
 {/* ends */}
-
-
-            </div>
         </div>
         <UploadMediaModal profilePic={true} multiModal={"uploadMediaModalProfilePic"}
          updateFunction={props.fetchProfile}/>
@@ -239,10 +262,19 @@ function UserCard(props){
           onHide={() => setModalShow(false)}
         />
         <StoryCarousel  
+            header={"User stories"}
             show={showStories}
             onHide={() => setShowStories(false)}
             images={userStories}
         />
+         <StoryCarousel  
+         header={"Archived stories"}
+            show={showArchivedStories}
+            onHide={() => setShowArchivedStories(false)}
+            images={archivedStories}
+        />
+            
+    <ProfileUpdationForm/>
     </div>
 }
 export default UserCard;

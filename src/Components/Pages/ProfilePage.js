@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import UserContext from "../Contexts/UserContext";
 import UploadMediaModal from "./UploadMediaModal";
-import {baseUrl} from '../../ConfigFiles/Urls';
+import {baseUrl, feedUrl} from '../../ConfigFiles/Urls';
 import axios from "axios";
 import NoProfileMedia from "../UXMessages/NoProfileMedia";
 import CardAndModal from "../Cards/CardAndModal";
@@ -19,7 +19,7 @@ function ProfilePage(){
 
      let decisionRequired = id===undefined?false:true;
      if(decisionRequired){
-        if(id===userCtx.username){
+        if(id===userCtx.getUsername()){
           return true;
         }else{
           return false;
@@ -36,7 +36,7 @@ function ProfilePage(){
 
     const getImages = async () => {
 
-      let queryUsername = determineCurrentUser()?userCtx.username:id;
+      let queryUsername = determineCurrentUser()?userCtx.getUsername():id;
        await axios.get(baseUrl+"/media/all/"+queryUsername,
         {
             headers: { 
@@ -45,6 +45,8 @@ function ProfilePage(){
         },
         ).then(
           response=>{
+            console.log(response.data)
+  
             response.data.map(media=>{
 
               media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)});
@@ -55,14 +57,14 @@ function ProfilePage(){
               });
               
               media.mediaComments.forEach(row=>{
-                if(row.commentsOnComment?.length>0){
+                if(row.commentsOnComment?.length>0){                
+                    row.commentsOnComment?.sort((row1,row2)=>{
+                      var date1 = new Date(row1.createdAt);
+                      var date2 = new Date(row2.createdAt);
+                      return date1.getTime()-date2.getTime();
+                    })
                   return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
                 }
-                // row.commentsOnComment?.sort((row1,row2)=>{
-                //              var date1 = new Date(row1.createdAt);
-                //   var date2 = new Date(row2.createdAt);
-                //   return date1.getTime()-date2.getTime();
-                // })
               })
               
 
@@ -79,14 +81,13 @@ function ProfilePage(){
       };
       const updateOneImage = async (mediaId) =>{
         let updatedImage;
-        await axios.get("http://localhost:8102/media/"+mediaId,
+        await axios.get(feedUrl+"/media/"+mediaId,
         {
           headers: { 
             "Authorization":userCtx.getToken()
           }
       },
         ).then(res => updatedImage=res.data).catch(err=>console.log(err));
-        console.log(updatedImage);
         updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
     
         updatedImage.mediaComments?.sort((row1,row2)=>{
@@ -96,6 +97,11 @@ function ProfilePage(){
         });
         updatedImage.mediaComments.forEach(row=>{
           if(row.commentsOnComment?.length>0){
+            row.commentsOnComment?.sort((row1,row2)=>{
+              var date1 = new Date(row1.createdAt);
+              var date2 = new Date(row2.createdAt);
+              return date1.getTime()-date2.getTime();
+            })
             return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
           }
         })
@@ -109,7 +115,7 @@ function ProfilePage(){
       }
       const fetchProfile = async ()=>{
         
-       await axios.get(baseUrl+"/user/"+(currentUser?userCtx.username:id),
+       await axios.get(baseUrl+"/user/"+(currentUser?userCtx.getUsername():id),
             {
               headers: { 
                 "Authorization":userCtx.getToken()
@@ -133,10 +139,6 @@ function ProfilePage(){
       },[id])
       useEffect(()=>{
       },[profileLoaded])
-      // useEffect(()=>{
-      //     fetchProfile();
-      //     getImages();
-      //   },[]);
 
 return <div className="mx-auto" style={{width:"85%"}}>
 {profileLoaded&&
@@ -158,6 +160,7 @@ return <div className="mx-auto" style={{width:"85%"}}>
                   profilePage={true}
                   refreshData={getImages}
                   updateOneImage={updateOneImage}
+                  usernamePostedBy={id}
                 />)})
     :currentUser?<NoProfileMedia/>:<NoMedia/>}
 </div>

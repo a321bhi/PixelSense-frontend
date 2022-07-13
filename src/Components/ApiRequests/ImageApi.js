@@ -3,8 +3,6 @@ import axios from "axios";
 
 import { toast } from 'react-toastify';
 export const deleteImage = async (mediaId, refreshData, userCtx) => {
-    // var bodyFormData = new FormData();
-    // bodyFormData.append('mediaId', mediaId);
     await axios.delete( baseUrl+"/media/"+mediaId,
     {
         headers: { 
@@ -26,10 +24,8 @@ export const deleteImage = async (mediaId, refreshData, userCtx) => {
             refreshData();
 };
 export const unlikeImage = async (mediaId, refreshData, userCtx) => {
-    // var bodyFormData = new FormData();
-    // bodyFormData.append('mediaId', mediaId);
+
     await axios.delete(baseUrl+"/media/likes/"+mediaId,
-    // bodyFormData,
     {
     headers: { 
             "Authorization":userCtx.getToken()
@@ -62,8 +58,7 @@ export const likeComment = async (commentId, refreshData, userCtx) => {
       ).then(response=>{refreshData();}).catch(err=>(err));
     };
 export const unlikeComment = async (commentId, refreshData, userCtx) => {
-    // var bodyFormData = new FormData();
-    // bodyFormData.append('commentId', commentId);
+
     await axios.delete(baseUrl+"/media/comment-likes/"+commentId,
     {
     headers: { 

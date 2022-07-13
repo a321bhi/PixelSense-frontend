@@ -39,7 +39,9 @@ export const UserContext = React.createContext({
           headers:{
             "Authorization":token
           }
-        }).then(res=>{setUserProfileState(res.data);console.log(res.data)})
+        }).then(res=>{
+          setUserProfileState(res.data);
+         }).catch(err=>console.log(err));
       }else{
         localStorage.removeItem(token);
         setUsernameState("");
@@ -68,6 +70,23 @@ export const UserContext = React.createContext({
         return null;
       }
     }
+      async function getUserProfile(){
+      if(Object.keys(userProfileState).length===0){
+        let profileTemp = {};
+       await axios.get(baseUrl+"/user/"+getUsername(),
+        {
+          headers:{
+            "Authorization":getToken()
+          }
+        }).then(res=>{
+           setUserProfileState(res.data);
+             profileTemp = res.data;
+          }).catch(err=>console.log(err));
+            return profileTemp;
+      }else {  
+        return userProfileState;
+      }
+    }
     const context={
         username:usernameState,
         token:tokenState,
@@ -80,6 +99,7 @@ export const UserContext = React.createContext({
         setUsername:setUsernameState,
         setToken: setTokenState,
         setUserProfile:setUserProfileState,
+        getUserProfile:getUserProfile,
         setStompClient:setStompClient,
         getToken:getToken
     };

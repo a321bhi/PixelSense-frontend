@@ -12,7 +12,6 @@ function InputArea(props){
     const [chosenEmoji, setChosenEmoji] = useState(null);
 
   const onEmojiClick = (event, emojiObject) => {
-    console.log(emojiObject);
     chatMessageHandler.current.value+=emojiObject.emoji
   };
   const sendMessage=()=> {
@@ -27,6 +26,7 @@ function InputArea(props){
     chatMessageHandler.current.value="";
     }
     props.callRefresh();
+    
 }
 return <div className="">
     <div  className="chatInputForm d-flex " style={{height:"75px",position: "relative"}}>

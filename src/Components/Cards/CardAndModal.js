@@ -7,10 +7,11 @@ function CardAndModal(props){
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const modalCloseButtonHandle = useRef();
+    
     return <div className="col g-3">
         <CardView {...props} handleShow={handleShow} />
         <ImageModal closeRef={modalCloseButtonHandle}
-                usernamePostedBy={props.imageData.usernamePostedBy}
+                usernamePostedBy={props.usernamePostedBy?props.usernamePostedBy:props.imageData.usernamePostedBy}
                 refreshData={props.refreshData}
                 local={props.local?props.local:false}
                 currentUser={props.currentUser}

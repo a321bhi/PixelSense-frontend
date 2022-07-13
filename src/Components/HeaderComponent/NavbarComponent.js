@@ -12,6 +12,7 @@ import UserContext from "../Contexts/UserContext";
 import { useContext } from "react";
 import axios from "axios";
 import UploadUserStory from "../Pages/UploadUserStory";
+import { feedUrl } from "../../ConfigFiles/Urls";
 function NavbarComponent(){
   const userCtx = useContext(UserContext);
   const [searchResult, setSearchResult] = useState({});
@@ -25,7 +26,7 @@ function profilePageClick(){
 }
 function search(){
   if(searchBarHandle?.current?.value!==""){
-  axios.get("http://localhost:8102/media/search/"+searchBarHandle.current.value,
+  axios.get(feedUrl+"/media/search/"+searchBarHandle.current.value,
   {
     headers: { 
       "Authorization":userCtx.getToken()

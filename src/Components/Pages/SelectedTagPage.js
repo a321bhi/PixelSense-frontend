@@ -5,6 +5,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import UserContext from "../Contexts/UserContext";
 import { useContext } from "react";
+import { feedUrl } from "../../ConfigFiles/Urls";
 function SelectedTagPage(){
   const userCtx = useContext(UserContext);
     let { tag } = useParams();
@@ -19,7 +20,7 @@ function SelectedTagPage(){
         return;
       }
          
-       await axios.get("http://localhost:8102/media/feed/"+chosenTag,
+       await axios.get(feedUrl+"/media/feed/"+chosenTag,
        {
         headers: { 
           "Authorization":userCtx.getToken()

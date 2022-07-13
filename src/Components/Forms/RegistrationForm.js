@@ -3,7 +3,7 @@ import {  useRef,useState } from "react";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import './RegistrationFormStyle.css';
 import { ToastContainer, toast } from 'react-toastify';
-
+import { countryCodes } from "../../ConfigFiles/countryCallingCodes";
 function RegistrationForm(){
   const modalCloseButtonHandle = useRef();
   const fullNameHandle = useRef();
@@ -23,6 +23,11 @@ function RegistrationForm(){
     setvalidationClass("form-floating was-validated")
     
   }
+  let [currentSel, setCurrentSel] = useState("");
+  function flipCountryName(){
+    setCurrentSel(countryCodeHandle.current.selectedOptions[0].label);
+    countryCodeHandle.current.selectedOptions[0].label=countryCodeHandle.current.value;
+  }
   function togglePasswordsNotMatching(){
 
     if(passwordsNotMatching){
@@ -33,7 +38,7 @@ function RegistrationForm(){
   function checkUsername(){
     
     if(usernameHandle.current.value!==""){
-    axios.get('/user/check/'+usernameHandle.current.value)
+    axios.get(baseUrl+'/user/check/'+usernameHandle.current.value)
     .then(response=>{
       setUsernameConflict(response.data);
 
@@ -68,7 +73,8 @@ function RegistrationForm(){
         'fullName':fullName,
         'emailAddress':email,
         'username':username,
-        'phoneNumber':countryCode+""+phone,
+        'countryCode':countryCode,
+        'phoneNumber':phone,
         'dateOfBirth':dateOfBirth,
         'password':password
 
@@ -153,16 +159,20 @@ function RegistrationForm(){
                 {usernameConflict?<div className="my-3 mx-auto text-danger">Username already taken</div>:""
                 }
                 <div className="my-3 d-flex w-100">
-                    <div className="form-floating  w-25">
-                    <input 
-                      className="form-control" 
-                      id="cc" 
-                      type="text" 
-                      name="cc"  
-                      value="+91" 
-                      size="2"
-                      ref={countryCodeHandle}
-                      required/>  
+                <div className="form-floating  w-25">
+                    <select className="form-select" aria-label="select country code"
+                              name="cc" 
+                              id="cc" 
+                              
+                              onChange={flipCountryName}
+                              ref={countryCodeHandle}
+                          >
+                      <option selected>Country code</option>
+                      {countryCodes.countries.map((code,i)=>{
+                          return <option key={i} value={code.code} label={code.name+" "+code.code}>{code.code}</option>
+                      })}
+                    </select>
+                    
                     <label className="form-label" htmlFor="cc" >CC</label> 
                     </div>  
                     <div className="form-floating  w-75">

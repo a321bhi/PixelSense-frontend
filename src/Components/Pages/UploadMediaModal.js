@@ -4,6 +4,7 @@ import UserContext from "../Contexts/UserContext";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import { toast } from 'react-toastify';
 function UploadMediaModal(props){
+  const tagsRef = useRef(null);
   const [tagsState,setTagsState] = useState([]);
   const userCtx = useContext(UserContext);
   const modalCloseButtonHandle = useRef();
@@ -20,8 +21,10 @@ function UploadMediaModal(props){
       formData.append("image", selectedFile);
       if(!props?.profilePic){
         let captionToBeUploaded = captionHandle.current.value;
-        let tagsToBeUploaded =tagsState.map(tags=>tags.replace("#",""));
-        tagsToBeUploaded = tagsToBeUploaded?.length>0?tagsToBeUploaded:[];
+        //let tagsToBeUploaded =tagsState.map(tags=>tags.replace("#",""));
+        //tagsToBeUploaded = tagsToBeUploaded?.length>0?tagsToBeUploaded:[];
+        let tagsToBeUploaded = tagsRef.current.innerHTML.split(",").map(tags=>tags.replace("#",""));
+        // tagsToBeUploaded =tagsToBeUploaded
         formData.append("mediaTags",tagsToBeUploaded);
         formData.append("mediaCaption",captionToBeUploaded);
       }
@@ -64,9 +67,12 @@ function UploadMediaModal(props){
         );}};
     function checkCaption(){
       let text = captionHandle.current.value;
-      if(text.includes("#")){
-        setTagsState(text.match(/#[a-z]+/gi));
+      if(text.includes("#")){  
+        tagsRef.current.innerHTML = text.match(/#(\w+)/g);
+      }else{
+        tagsRef.current.innerHTML="None";
       }
+      console.log(tagsRef.current.innerHTML?.length)
     }
     return (
     <div className="modal fade" id={props.multiModal?props.multiModal:"uploadMediaModal"} aria-labelledby="uploadModalLabel" aria-hidden="true">
@@ -98,7 +104,8 @@ function UploadMediaModal(props){
                     <div className="invalid-tooltip">
                       Enter media caption
                     </div>
-                    <div>{tagsState?(<div> Tags Entered - <span className="text-primary">{tagsState.map(tag=>tag.trim()+" ")}</span></div>):"No tags entered"}</div>
+                    <div>{"Tags:  "}</div> <div ref={tagsRef}>{"None"}
+                      </div>
                 </div>
       }
           {fileData()}

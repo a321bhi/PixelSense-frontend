@@ -9,9 +9,9 @@ import { likeComment,unlikeComment } from '../ApiRequests/ImageApi';
 import MiniUserCard from "./MiniUserCard";
 function CommentComponent(props){
     const userCtx = useContext(UserContext);
-    return <ul className='list-group container'>
+    return <ul className='list-group container '>
       {props.commentData?.map(
-        (item,i)=><li key={i} className='list-group-item  d-flex row'>
+        (item,i)=><li key={i} className='list-group-item  d-flex row '>
           <div className='col-10 col-md-11'>
           <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser.userName}/></span>
           {item.commentContent}
@@ -43,7 +43,7 @@ function CommentComponent(props){
               {timeSince(item.createdAt)}
             </div>
           }
-  <div className="d-flex text-muted ">{console.log(item.commentLikedBy)}
+  <div className="d-flex text-muted ">
     {  (item.commentLikedBy?.includes(userCtx.getUsername()))?
        <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeComment(item.commentId,props.updateOneImage, userCtx);}} size="2x"/>
       :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>{likeComment(item.commentId,props.updateOneImage, userCtx);}} size="2x"/>

@@ -1,21 +1,21 @@
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { getProfilePic } from "../ApiRequests/ProfileApi";
 import UserContext from "../Contexts/UserContext";
 import { useContext,useEffect,useState } from "react";
 function MiniUserCard(props){
     let userCtx = useContext(UserContext);
     let [pic,setPic] = useState("");
     const navigate= useNavigate();
+    function loadProfilePic(){
     if(props?.source===undefined){
-        axios.get(baseUrl+"/user/"+props?.username,
-        {
-            headers: { 
-              "Authorization":userCtx.getToken()
-            }
-          }
-        ).then(response=>{setPic(response.data.profilePicAsBase64);  }).catch(err=>console.log(err));
+        getProfilePic(props?.username,userCtx)
+        .then(res=>setPic(res.data.profilePicAsBase64))
+        .catch(err=>console.log(err));
     }
+}
+useEffect(()=>{
+    loadProfilePic();
+},[])
     const navToUser= ()=>{
         if(!props.disableProfileLink){
             navigate("/profile/"+props.username);  

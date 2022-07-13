@@ -1,0 +1,16 @@
+
+.msg-time{
+    display:none;
+}
+.msg-time-normal{
+    display: block;
+}
+.msg-time-hover{
+    display: none;
+}
+.msg-content:hover .msg-time-hover{
+    display: block;
+}
+.msg-content:hover .msg-time-normal{
+    display: none;
+}

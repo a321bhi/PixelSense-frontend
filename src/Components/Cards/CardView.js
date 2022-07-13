@@ -16,7 +16,7 @@ function CardView(props){
   let [spinnerClasses,setSpinnerClasses] = useState("d-block mx-auto mt-3");
   let [imgClasses,setImgClasses] = useState("d-none");
   let [showLikedByModal, setShowLikedByModal] =useState(false);
-
+  const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
 useEffect(()=>{
 if(imageLoaded){
   setSpinnerClasses("d-none");
@@ -40,8 +40,8 @@ return (
     
               <div className="card-footer d-flex text-muted">
                 {  (props.imageData.likedBy?.includes(userCtx.username))?
-                   <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
-                  :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeImage(props.imageData.mediaId,props.refreshData, userCtx)} size="2x"/>
+                   <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>unlikeImage(props.imageData.mediaId,updateOneImage, userCtx)} size="2x"/>
+                  :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>likeImage(props.imageData.mediaId,updateOneImage, userCtx)} size="2x"/>
                 }
                 <div className='mx-1' role="button" onClick={()=>setShowLikedByModal(!showLikedByModal)}>
                   {props.imageData.likedBy?.length+" likes"}

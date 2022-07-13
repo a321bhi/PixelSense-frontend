@@ -2,6 +2,7 @@ import axios from "axios";
 import {  useRef,useState,useContext } from "react";
 import UserContext from "../Contexts/UserContext";
 import { toast } from 'react-toastify';
+import { feedUrl } from "../../ConfigFiles/Urls";
 function UploadUserStory(props){
   const userCtx = useContext(UserContext);
   const modalCloseButtonHandle = useRef();
@@ -15,7 +16,7 @@ function UploadUserStory(props){
     event.preventDefault();
       const formData = new FormData();
       formData.append("image", selectedFile);
-     axios.post("http://localhost:8102/media/story",formData,{
+     axios.post(feedUrl+"/media/story",formData,{
       headers: { 
         "Authorization":userCtx.getToken(),
         "Content-Type": 'multipart/form-data'
