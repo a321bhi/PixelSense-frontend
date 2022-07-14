@@ -45,8 +45,6 @@ function ProfilePage(){
         },
         ).then(
           response=>{
-            console.log(response.data)
-  
             response.data.map(media=>{
 
               media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)});

@@ -87,7 +87,7 @@ function HomePage(){
           return tag;
         }
       })
-      console.log(queryTags.toString());
+
       if(feedPrefUpdated){
         setCurrentPage(0);
       }

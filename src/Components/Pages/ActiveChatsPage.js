@@ -43,7 +43,7 @@ const getUsersFromContext= async ()=>{
     const formData = new FormData();
   
     formData.append("username",userCtx.getUsername());
-    axios.post(chatServiceUrl+"getChats",formData,
+    axios.post(chatServiceUrl+"/getChats",formData,
     {
       headers: { 
         "Authorization":userCtx.getToken()
@@ -108,6 +108,7 @@ const arrOfRefs = useRef([]);
               <Tab.Pane eventKey="-"><NoMessages></NoMessages></Tab.Pane>
             {users.map((item,i)=>
                               {return <Tab.Pane 
+                                      key={i}
                                         eventKey={item} 
                                         onEntered={()=>{arrOfRefs.current[i].current.scrollIntoView()}}
                                         > 

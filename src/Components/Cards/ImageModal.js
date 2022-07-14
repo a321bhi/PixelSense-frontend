@@ -84,14 +84,18 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
     let formData = new FormData();
     // console.log(arrOfRefs.current[keyForHandle].current.value+" "+keyForHandle)
     let commentContent = arrOfRefs.current[keyForHandle].current.value;
-  
+
     if(commentContent.length>0){
      formData.append("commentId",commentId) 
      formData.append("commentContent",commentContent);
       axios.post(baseUrl+"/comment/comment",formData,
         {
             headers:{"Authorization":userCtx.getToken()}
-          }).then(res=>{props.updateOneImage(props.imageData.mediaId);arrOfRefs.current[keyForHandle].current.value=""}).catch(err=>console.log(err)) 
+          }).then(res=>{
+            setCommentId(commentId);
+              props.updateOneImage(props.imageData.mediaId);
+              arrOfRefs.current[keyForHandle].current.value=""
+            }).catch(err=>console.log(err)) 
     }}
     function deleteReplyToComment(commentId){
         axios.delete(baseUrl+"/comment/comment/"+commentId,
@@ -99,6 +103,18 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
               headers:{"Authorization":userCtx.getToken()}
             }).then(res=>{props.updateOneImage(props.imageData.mediaId)}).catch(err=>console.log(err)) 
       }
+      let [showMoreCaption,setShowMoreCaption] = useState(false);
+      let flipShowMoreCaption = ()=> setShowMoreCaption(!showMoreCaption)
+    function getTrimmedCaption(caption){
+      if(caption.length>100){
+        if(showMoreCaption){
+          return <div style={{fontSize:"18px"}}>{caption}<span style={{ backgroundColor:"yellowgreen"}} role="button" onClick={flipShowMoreCaption}> Show Less</span></div>
+        }else{
+          return <div style={{fontSize:"18px"}}>{caption.slice(0,100)}<span style={{backgroundColor:"yellowgreen"}} role="button" onClick={flipShowMoreCaption}> Show more</span></div>
+        } 
+      }
+      return caption;
+    }
    return props.showModal?<Modal
    className="bg-dark bg-opacity-75"
    size="xl"
@@ -157,13 +173,13 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
           }
         </div>
       {/* <Modal.Footer className='d-block fs-5'> */}
+      <div style={{overflowY:"auto", height:"70vh"}}>
       <div 
-      
-      style={{minHeight:"40px"}}
+
           contentEditable={editable} 
           className={"fs-5"+textAreaClass}
           ref={captionHandle}
-          >{props.imageData.mediaCaption?props.imageData.mediaCaption:""}
+          >{props.imageData.mediaCaption?getTrimmedCaption(props.imageData.mediaCaption):""}
           </div>
           {editable?
           <div role="button" onClick={updateDescription} contentEditable={false} className='btn border float-end'>Update</div>
@@ -214,8 +230,14 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
                           {timeSince(item.createdAt)}
                         </div>
                       }
-                      {item.commentsOnComment?.length>0?<div role="button" onClick={()=>commentId!=item.commentId?setCommentId(item.commentId):setCommentId("")}>{
-                      commentId===item.commentId?"Hide replies":"Show replies"}</div>:""}
+                      {item.commentsOnComment?.length>0?
+                          <div 
+                            role="button" 
+                            onClick={()=>commentId!=item.commentId?setCommentId(item.commentId):setCommentId("")}
+                           >
+                              {commentId===item.commentId?"Hide replies":"Show replies"}
+                          </div>:""
+                      }
                       {<div 
                       role="button" onClick={()=>commentIdForReply===item.commentId?setCommentIdForReply(""):setCommentIdForReply(item.commentId)}>Reply</div>}
            
@@ -229,10 +251,14 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
                 </div>
               </div>
               </div>
-              {commentId===item.commentId?<CommentComponent refreshData={props.refreshData} commentData={item.commentsOnComment}
+              {commentId===item.commentId?
+                    <CommentComponent 
+                      refreshData={props.refreshData} 
+                      commentData={item.commentsOnComment}
                       deleteComment={deleteReplyToComment}
                       updateOneImage={()=>props.updateOneImage(props.imageData.mediaId)}
-                      ></CommentComponent>:""}
+                      />
+              :""}
                 {commentIdForReply===item.commentId?
               <CommentInputArea 
               commentId={commentIdForReply} 
@@ -246,9 +272,10 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
               </ul>
           :""}
           </div>
+          </div>
+          </div>
           {/* <CommentInputArea commentId={commentIdForReply} addComment={replyToComment} newCommentHandle={replyToCommentHandle}/>  */}
         <CommentInputArea addComment={addComment} newCommentHandle={newCommentHandle}/>  
-        </div>
         </div>
         </Modal.Body>
         <LikedByModal

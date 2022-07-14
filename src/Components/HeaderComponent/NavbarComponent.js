@@ -79,7 +79,7 @@ useEffect(()=>{
             <li className="text-center fw-bold dropdown-item">Users</li>
             {searchResult?.usernameOutput?.length>0 && searchBarHandle?.csurrent?.value!==""?
 
-                  searchResult?.usernameOutput?.map(output=> <li><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
+                  searchResult?.usernameOutput?.map((output,i)=> <li key={i} ><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
                   :<li className="text-center">No users found</li>
                   
             }
