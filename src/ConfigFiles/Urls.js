@@ -1,5 +1,6 @@
 // let ip = "35.223.84.164";
-let ip="localhost";
+let ip="35.232.154.40";
+// let ip="localhost";
 
 export const baseUrl ="http://"+ip+":8090";
 export const feedUrl = "http://"+ip+":8102";
