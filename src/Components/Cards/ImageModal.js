@@ -16,13 +16,16 @@ import { likeComment,unlikeComment,likeImage,unlikeImage,deleteImage } from '../
 import LikedByModal from './LikedByModal';
 import CommentComponent from './CommentComponent';
 import MiniUserCard from './MiniUserCard.js';
+import ThemeContext from '../Contexts/ThemeContext.js';
 function ImageModal(props){
+  let [likedByStateComment,setLikedByStateComment] = useState([]);
   let userCtx = useContext(UserContext);
   let [showLikedByModal, setShowLikedByModal] =useState(false);
+  let [showLikedByModalComment, setShowLikedByModalComment] =useState(false);
   let [commentId,setCommentId] = useState("");
   let [editable, setEditable] = useState(false);
   let [textAreaClass, setTextAreaClass] = useState("");
-
+let themeCtx = useContext(ThemeContext);
   const newCommentHandle = useRef();
   const [commentIdForReply,setCommentIdForReply] = useState("");
   const captionHandle = useRef();
@@ -115,6 +118,8 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       }
       return caption;
     }
+   
+    
    return props.showModal?<Modal
    className="bg-dark bg-opacity-75"
    size="xl"
@@ -123,18 +128,19 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <div className='d-flex'>
+      <div className={"d-flex "+(themeCtx.darkMode?"bg-dark text-light":"")}>
       <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.getUsername():props.usernamePostedBy}/></div>
       <div className="text-end pt-3 pe-3" style={{width:"100%"}}>
-        <button type="button" className="btn-close" aria-label="Close" onClick={props.handleClose}/>
+        <button className={"btn-close "+(themeCtx.darkMode?"bg-light":"")} type="button" aria-label="Close" onClick={props.handleClose}/>
       </div>
       </div>
-      <Modal.Body className="d-md-flex d-block" style={{width:"100%"}}> 
+      <Modal.Body className={"d-md-flex d-block "+(themeCtx.darkMode?"bg-dark text-light":"")} style={{width:"100%"}}> 
       <div className='p-3 custom-image-div' >
       <img alt={"image"} className="imgModal"  src={props.imageData?"data:image/jpg;base64,"+props.imageData.imageAsBase64:""}/>
       </div>
       
-      <div className='p-3 custom-comments-div ' >
+      <div className="p-3 custom-comments-div " >
+        <div className=' d-flex'>
         {(props.imageData.likedBy?.includes(userCtx.getUsername()))?
           <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeImage(props.imageData.mediaId, updateOneImage,userCtx);
             props.updateOneImage(props.imageData.mediaId);    
@@ -145,7 +151,9 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
             props.updateOneImage(props.imageData.mediaId);
           }} size="2x"/>
         }
+        <div  className='ms-2' role="button" onClick={()=>setShowLikedByModal(!showLikedByModal)}>
        {props.imageData.likedBy?.length+" likes"}
+       </div></div>
        <div className='float-end'>
           {props.currentUser?
           <div className="btn-group">
@@ -188,16 +196,16 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       <div>{props.imageData.mediaTags?props.imageData.mediaTags.map((tag,i)=>{
        return <span key={i} className='text-primary'>{tag+" "}</span>
       }):""}</div>
-      <div className='text-muted'>{props.imageData.mediaDate?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
+      <div className={(themeCtx.darkMode?" text-light":" text-muted") }>{props.imageData.mediaDate?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
         
 
-        <div className='d-block ' >
-        <div className='fs-5' >Comments</div>
-          <div className='overflow-auto '  style={{height:"50vh"}}>
+        <div className={"d-block "} >
+        <div className='fs-5 ' >Comments</div>
+          <div className="overflow-auto "  style={{height:"50vh"}}>
           {props.imageData.mediaComments?.length>0?
-              <ul className='list-group container'>
+              <ul className={"list-group container "+(themeCtx.darkMode?" bg-dark text-light  ":"")}>
                     {props.imageData.mediaComments.map(
-                    (item,i)=><li key={i} className='list-group-item ms-1 d-flex row'>
+                    (item,i)=><li key={i} className={"list-group-item ms-1 d-flex row "+(themeCtx.darkMode?" bg-dark text-light border border-light":"")}>
                       <div className='col-10 col-md-11'>
                       <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser.userName}/></span>
                       {item.commentContent}
@@ -226,7 +234,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
                     <div className='d-flex justify-content-between mt-2'>
                       
                     {
-                        <div className='text-muted'>
+                        <div className={(themeCtx.darkMode?" text-light":" text-muted") }>
                           {timeSince(item.createdAt)}
                         </div>
                       }
@@ -241,14 +249,19 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
                       {<div 
                       role="button" onClick={()=>commentIdForReply===item.commentId?setCommentIdForReply(""):setCommentIdForReply(item.commentId)}>Reply</div>}
            
-              <div className="d-flex text-muted">
+              <div className={"d-flex "+(themeCtx.darkMode?" text-light":" text-muted") } >
                 {  (item.commentLikedBy?.includes(userCtx.username))?
                    <FontAwesomeIcon role="button" icon={faHeartSolid} onClick={()=>{unlikeComment(item.commentId,updateOneImage,userCtx);}} size="2x"/>
                   :<FontAwesomeIcon role="button" icon={faHeart} onClick={()=>{likeComment(item.commentId,updateOneImage,userCtx);props.updateOneImage(props.imageData.mediaId)}} size="2x"/>
                 }
-                <div className='mx-1'  role="button" onClick={()=>setShowLikedByModal(!showLikedByModal)}>
+                <div className='mx-1' role="button" onClick={()=>{setShowLikedByModalComment(!showLikedByModalComment);setLikedByStateComment(item.commentLikedBy);}}>
                   {item.commentLikedBy?item.commentLikedBy.length+" likes":"0"+" likes"}
                 </div>
+                <LikedByModal
+        likedBy={likedByStateComment}
+          show={showLikedByModalComment}
+          onHide={() => setShowLikedByModalComment(false)}
+        />
               </div>
               </div>
               {commentId===item.commentId?
@@ -283,6 +296,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
           show={showLikedByModal}
           onHide={() => setShowLikedByModal(false)}
         />
+        
     </Modal>:""
 }
 

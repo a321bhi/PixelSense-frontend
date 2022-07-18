@@ -1,19 +1,22 @@
 import { Carousel,Modal,Button } from "react-bootstrap";
 import { timeSince } from "../../ConfigFiles/timeSince";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useContext } from "react";
+import ThemeContext from "../Contexts/ThemeContext";
 function StoryCarousel(props){
-    
+    let themeCtx = useContext(ThemeContext)
 return  <Modal
 {...props}
 size="lg"
 aria-labelledby="contained-modal-title-vcenter"
 centered
+
 >
-<Modal.Header className="w-100" closeButton>
+<Modal.Header className={"w-100 "+(themeCtx.darkMode?"bg-dark text-light":"")} closeButton>
   
-  <div className="fs-3 w-100">{props.header}</div>
+  <div className={"fs-3 w-100 "+(themeCtx.darkMode?"bg-dark text-light":"")} >{props.header}</div>
 </Modal.Header>
-<Modal.Body>
+<Modal.Body className={(themeCtx.darkMode?"bg-dark text-light":"")} >
 <Carousel variant="dark" style={{height:"70vh"}}>
    { props?.images.length>0?
         props.images.map(item=>{
@@ -28,7 +31,7 @@ centered
     }
 </Carousel>
 </Modal.Body>
-<Modal.Footer>
+<Modal.Footer className={(themeCtx.darkMode?"bg-dark text-light":"")} >
   <Button onClick={props.onHide}>Close</Button>
 </Modal.Footer>
 </Modal>

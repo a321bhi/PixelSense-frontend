@@ -1,19 +1,19 @@
 import HeaderDarkSwitch from "./HeaderDarkSwitch";
 import LogoutSwitch from "./LogoutSwitch";
-import { Navbar,Container,Offcanvas,Nav,Form,Button } from "react-bootstrap";
+import { Navbar,Container,Offcanvas,Nav } from "react-bootstrap";
 import MiniUserCard from '../Cards/MiniUserCard';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from 'react-router-dom';
-import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
-import { faCameraRetro } from "@fortawesome/free-solid-svg-icons";
-import { faIdCard} from "@fortawesome/free-solid-svg-icons";
+import { faCommentDots, faCameraRetro,faIdCard} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import UserContext from "../Contexts/UserContext";
 import { useContext } from "react";
 import axios from "axios";
 import UploadUserStory from "../Pages/UploadUserStory";
 import { feedUrl } from "../../ConfigFiles/Urls";
+import ThemeContext from "../Contexts/ThemeContext";
 function NavbarComponent(){
+  let themeCtx = useContext(ThemeContext)
   const userCtx = useContext(UserContext);
   const [searchResult, setSearchResult] = useState({});
   const searchBarHandle = useRef();
@@ -43,7 +43,7 @@ function search(){
 useEffect(()=>{
 
 },[searchResult,searchBarHandle?.current?.value])
-    return <Navbar className="w-100" expand={'lg'} >
+    return <Navbar className={"w-100 "+(themeCtx.darkMode?"bg-dark text-light":"")} expand={'lg'} >
     <Container fluid>
       <Navbar.Toggle aria-controls={"offcanvasNavbar-expand-lg"} />
       <Navbar.Offcanvas
@@ -85,15 +85,15 @@ useEffect(()=>{
             }
             </ul>
           </div>
-          <Nav className="justify-content-end flex-grow-1 pe-3 text-light">
+          <Nav className="justify-content-end flex-grow-1 pe-3">
            
-            <Nav.Link type="button" onClick={messageIconClick}><FontAwesomeIcon icon={faCommentDots} size="2x"/></Nav.Link>
+            <Nav.Link type="button" onClick={messageIconClick}><FontAwesomeIcon style={(themeCtx.darkMode?{color:"white"}:{})} icon={faCommentDots} size="2x"/></Nav.Link>
             
             {/* story start */}
 
             <div className="btn-group">
                 <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
-                  <Nav.Link ><FontAwesomeIcon icon={faCameraRetro} size="2x"/></Nav.Link>
+                  <Nav.Link ><FontAwesomeIcon style={(themeCtx.darkMode?{color:"white"}:{})} icon={faCameraRetro} size="2x"/></Nav.Link>
                 </div>
                 <ul className="dropdown-menu" aria-labelledby="editImage">
                 <li><div 
@@ -114,11 +114,9 @@ useEffect(()=>{
               </div>
 
 {/* end */}
-            <Nav.Link onClick={profilePageClick}><FontAwesomeIcon icon={faIdCard} size="2x"/></Nav.Link>
+            <Nav.Link onClick={profilePageClick}><FontAwesomeIcon style={(themeCtx.darkMode?{color:"white"}:{})} icon={faIdCard} size="2x"/></Nav.Link>
             <Nav.Link><LogoutSwitch/></Nav.Link>
           </Nav>
-
-          {/* <HeaderDarkSwitch/> */}
         </Offcanvas.Body>
       </Navbar.Offcanvas>
     </Container>

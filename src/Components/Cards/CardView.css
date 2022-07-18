@@ -3,8 +3,24 @@
     margin-right: auto;
     height: 30vh;
     width: 100%;
-    animation:opac 1.4s;
+    /* animation:opac 1.4s; */
     object-fit: cover;
 }
-
-@keyframes opac{from{opacity:0} to{opacity:1}}
+.counters{
+    position: absolute;
+    top:40%;
+    left:40%;
+}
+.img-counters{
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    display: none;
+}
+.card:hover .img-counters {
+    display: block;
+  }
+/* @keyframes opac{from{opacity:0} to{opacity:1}} */

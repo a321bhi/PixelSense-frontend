@@ -3,7 +3,9 @@ import {  useRef,useState,useContext } from "react";
 import UserContext from "../Contexts/UserContext";
 import { baseUrl } from "../../ConfigFiles/Urls";
 import { toast } from 'react-toastify';
+import ThemeContext from "../Contexts/ThemeContext";
 function UploadMediaModal(props){
+  let themeCtx = useContext(ThemeContext);
   const tagsRef = useRef(null);
   const [tagsState,setTagsState] = useState([]);
   const userCtx = useContext(UserContext);
@@ -28,7 +30,7 @@ function UploadMediaModal(props){
         formData.append("mediaTags",tagsToBeUploaded);
         formData.append("mediaCaption",captionToBeUploaded);
       }
-      const urlForUpload = baseUrl + (props?.profilePic?"/user/profile-pic":"/media/");
+      const urlForUpload = baseUrl + (props?.profilePic?"/user/profile-pic":"/user/media/");
      axios.post(urlForUpload,formData,{
       headers: { 
         "Authorization":userCtx.getToken(),
@@ -52,7 +54,17 @@ function UploadMediaModal(props){
             }
         })
         .catch((err) => {
-      console.log(err);alert("File Upload Error");});
+          toast.error("Image upload failed", {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            pauseOnFocusLoss:false
+            });
+        });
       modalCloseButtonHandle.current.click();
       formHandle.current.reset();
       changeSelectedFile(null);
@@ -75,9 +87,9 @@ function UploadMediaModal(props){
       console.log(tagsRef.current.innerHTML?.length)
     }
     return (
-    <div className="modal fade" id={props.multiModal?props.multiModal:"uploadMediaModal"} aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div className="modal fade "  id={props.multiModal?props.multiModal:"uploadMediaModal"} aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div className="modal-dialog modal-lg">
-      <div className="modal-content">
+      <div className={"modal-content "+(themeCtx.darkMode?"bg-dark text-light":"")}>
         <div className="modal-header w-100 d-block">
             <div className="d-flex">
             <div className="mx-auto display-6 text-center">{props.profilePic?"Update Profile Pic":"Upload Media"}</div>

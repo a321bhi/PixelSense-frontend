@@ -10,8 +10,10 @@ import Button from 'react-bootstrap/Button';
 import { Overlay } from "react-bootstrap";
 import SelectOrFollowMessage from "../UXMessages/SelectOrFollowMessage";
 import { feedUrl } from "../../ConfigFiles/Urls";
+import ThemeContext from "../Contexts/ThemeContext";
 
 function HomePage(){
+  let themeCtx = useContext(ThemeContext);
   const [selectedTags, setSelectedTags] = useState([]);
   const [currentPage,setCurrentPage] = useState(0);
   let [hasMoreData,setHasMoreData] = useState(true);
@@ -176,8 +178,7 @@ function HomePage(){
       setHasMoreData(true);
       fetchFeed();
     },[feedPrefUpdated])
-
-return (<div>
+return (<div className={themeCtx.darkMode?"bg-dark text-light":""}>
   <div> <Button ref={target} onClick={async () => {setShow(!show); updateFeedPreference();}}  >
     <FontAwesomeIcon icon={faAsterisk}></FontAwesomeIcon>
     </Button>

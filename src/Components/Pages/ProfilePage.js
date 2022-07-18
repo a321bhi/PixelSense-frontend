@@ -8,10 +8,12 @@ import CardAndModal from "../Cards/CardAndModal";
 import UserCard from "../Cards/UserCard";
 import { useParams } from "react-router-dom";
 import NoMedia from "../UXMessages/NoMedia";
+import ThemeContext from "../Contexts/ThemeContext";
 function ProfilePage(){
 
   let { id } = useParams();
   let userCtx = useContext(UserContext);
+  let themeCtx = useContext(ThemeContext);
   const [profileLoaded,setProfileLoaded] = useState(false);
   const [mediaLoaded,setMediaLoaded] = useState(false);
 
@@ -138,7 +140,8 @@ function ProfilePage(){
       useEffect(()=>{
       },[profileLoaded])
 
-return <div className="mx-auto" style={{width:"85%"}}>
+return <div className={(themeCtx.darkMode?" bg-dark text-light":"")} style={{width:"100%",minHeight:"100vh"}} >
+  <div className="mx-auto " style={{width:"90%"}}>
 {profileLoaded&&
   <UserCard  
     mediaCount={arr.length} 
@@ -164,6 +167,7 @@ return <div className="mx-auto" style={{width:"85%"}}>
 </div>
 <UploadMediaModal updateFunction={getImages}/>
 
+</div>
 </div>
 }
 

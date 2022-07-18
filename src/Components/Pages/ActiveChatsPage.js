@@ -16,8 +16,9 @@ import { useRef } from "react";
 import { createRef } from "react";
 import { toast } from 'react-toastify';
 import { chatServiceUrl } from "../../ConfigFiles/Urls";
+import ThemeContext from "../Contexts/ThemeContext";
 function ActiveChats() {
-  
+  let themeCtx= useContext(ThemeContext);
   let [allChats,setAllChats] = useState([]);
   let [users, setUsers] = useState([]);
   let [dataLoaded, setDataLoaded] = useState(false);
@@ -93,7 +94,7 @@ const arrOfRefs = useRef([]);
   
   },[dataLoaded])
 
-  return <div className="w-sm-100 w-75 mx-auto border mt-5" style={{height:"75vh"}}>
+  return <div className={(themeCtx.darkMode?" bg-dark text-light":"")} style={{width:"100%",height:"85vh"}}><div className={"w-sm-100 w-75 mx-auto border mt-5 "}   style={{height:"75vh"}}>
     <Tab.Container id="left-tabs" defaultActiveKey="-" >
       <Row className="w-100 g-0">
         <Col className="col-4">
@@ -144,6 +145,7 @@ const arrOfRefs = useRef([]);
       </Row>
       </Tab.Container>
       <UploadMediaModal/>
+  </div>
   </div>
   ;
 }

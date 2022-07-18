@@ -15,7 +15,7 @@ function ThemeContextProvider(props){
   
   const context={
     theme:themeState,
-    toggleDarkMode:()=>{setDarkModeState(!darkModeState);console.log("Changed to "+darkModeState)},
+    toggleDarkMode:()=>{setDarkModeState(!darkModeState);},
     darkMode:darkModeState
   };
   return <ThemeContext.Provider value={context}>
