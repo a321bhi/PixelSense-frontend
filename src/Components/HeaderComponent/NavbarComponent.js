@@ -26,7 +26,7 @@ function profilePageClick(){
 }
 function search(){
   if(searchBarHandle?.current?.value!==""){
-  axios.get(feedUrl+"/media/search/"+searchBarHandle.current.value,
+  axios.get(feedUrl+"/feed/search/"+searchBarHandle.current.value,
   {
     headers: { 
       "Authorization":userCtx.getToken()

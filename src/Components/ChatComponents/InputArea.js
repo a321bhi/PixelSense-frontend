@@ -17,7 +17,7 @@ function InputArea(props){
   const sendMessage=()=> {
     setShowPicker(false);
     if(chatMessageHandler.current.value.length>0){
-    userCtx.stompClient.send( "/app/chat/"+props.usernameTo, {}, JSON.stringify({
+    userCtx.stompClient.send( "/chat/"+props.usernameTo, {}, JSON.stringify({
       'message': chatMessageHandler.current.value,
       'usernameFrom':userCtx.username,
       'usernameTo':props.usernameTo,

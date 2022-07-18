@@ -16,13 +16,13 @@ function UploadUserStory(props){
     event.preventDefault();
       const formData = new FormData();
       formData.append("image", selectedFile);
-     axios.post(feedUrl+"/media/story",formData,{
+     axios.post(feedUrl+"/feed/story",formData,{
       headers: { 
         "Authorization":userCtx.getToken(),
         "Content-Type": 'multipart/form-data'
       }}).then((res) => {
         toast.info("Story uploaded!", {
-          position: "bottom-right",
+          position: "top-center",
           autoClose: 2500,
           hideProgressBar: true,
           closeOnClick: true,

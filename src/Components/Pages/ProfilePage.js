@@ -37,7 +37,7 @@ function ProfilePage(){
     const getImages = async () => {
 
       let queryUsername = determineCurrentUser()?userCtx.getUsername():id;
-       await axios.get(baseUrl+"/media/all/"+queryUsername,
+       await axios.get(baseUrl+"/user/all-media/"+queryUsername,
         {
             headers: { 
               "Authorization":userCtx.getToken()
@@ -79,7 +79,7 @@ function ProfilePage(){
       };
       const updateOneImage = async (mediaId) =>{
         let updatedImage;
-        await axios.get(feedUrl+"/media/"+mediaId,
+        await axios.get(feedUrl+"/feed/"+mediaId,
         {
           headers: { 
             "Authorization":userCtx.getToken()

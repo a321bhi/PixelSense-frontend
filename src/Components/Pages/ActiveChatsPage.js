@@ -14,6 +14,7 @@ import * as Stomp from 'stompjs';
 import MiniUserCard from "../Cards/MiniUserCard";
 import { useRef } from "react";
 import { createRef } from "react";
+import { toast } from 'react-toastify';
 import { chatServiceUrl } from "../../ConfigFiles/Urls";
 function ActiveChats() {
   
@@ -23,13 +24,24 @@ function ActiveChats() {
 let userCtx = useContext(UserContext);
   function connect() {
   if( userCtx.stompClient===null){
-    var socket = new SockJS('/gs-guide-websocket');
+    var socket = new SockJS(chatServiceUrl+'/chat/websocket');
     let stompClient = Stomp.over(socket);
     userCtx.setStompClient(stompClient);
-    stompClient.connect({headers:{ "Authorization":userCtx.getToken()}}, function (frame) {
+    stompClient.connect(
+      {headers:{ "Authorization":userCtx.getToken()}},
+       function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/'+(userCtx.username), function (greeting) {
-            console.log(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/'+(userCtx.getUsername()), function (message) {
+          toast.info(JSON.parse(message.body).usernameFrom+": "+JSON.parse(message.body).message, {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            pauseOnFocusLoss:false
+            });
         });
     });
 }}
@@ -43,7 +55,7 @@ const getUsersFromContext= async ()=>{
     const formData = new FormData();
   
     formData.append("username",userCtx.getUsername());
-    axios.post(chatServiceUrl+"/getChats",formData,
+    axios.post(chatServiceUrl+"/chat/get-all-chats",formData,
     {
       headers: { 
         "Authorization":userCtx.getToken()

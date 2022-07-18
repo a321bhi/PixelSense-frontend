@@ -24,7 +24,7 @@ function UserCard(props){
     const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?bioPlaceHolder:""));
     const [editable,setEditable] = useState(false);
     const fetchStories = ()=>{
-        axios.get(feedUrl+"/media/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
+        axios.get(feedUrl+"/feed/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -44,7 +44,7 @@ function UserCard(props){
             }).catch(err=>console.log(err));
     }
     const fetchArchivedStories = ()=>{
-        axios.get(feedUrl+"/media/archived-stories/"+userCtx.getUsername(),
+        axios.get(feedUrl+"/feed/archived-stories/"+userCtx.getUsername(),
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),

@@ -28,14 +28,14 @@ function UploadMediaModal(props){
         formData.append("mediaTags",tagsToBeUploaded);
         formData.append("mediaCaption",captionToBeUploaded);
       }
-      const urlForUpload = baseUrl + (props?.profilePic?"/media/profile-pic":"/media/");
+      const urlForUpload = baseUrl + (props?.profilePic?"/user/profile-pic":"/media/");
      axios.post(urlForUpload,formData,{
       headers: { 
         "Authorization":userCtx.getToken(),
         "Content-Type": 'multipart/form-data'
       }}).then((res) => {
-        toast.info("File Upload success", {
-          position: "bottom-right",
+        toast.info("Image Uploaded!", {
+          position: "top-center",
           autoClose: 2500,
           hideProgressBar: true,
           closeOnClick: true,

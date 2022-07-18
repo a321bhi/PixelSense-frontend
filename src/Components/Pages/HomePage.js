@@ -23,7 +23,7 @@ function HomePage(){
   let [feedPrefUpdated, setFeedPrefUpdated] =  useState(false);
   const updateOneImage = async (mediaId) =>{
     let updatedImage;
-    await axios.get(feedUrl+"/media/"+mediaId,
+    await axios.get(feedUrl+"/feed/"+mediaId,
     {
       headers: { 
         "Authorization":userCtx.getToken()
@@ -55,7 +55,7 @@ function HomePage(){
     } ))
   }
     const fetchTags = ()=>{
-      axios.get(feedUrl+"/media/feed-preference/"+userCtx.getUsername(),
+      axios.get(feedUrl+"/feed/feed-preference/"+userCtx.getUsername(),
       {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -64,7 +64,7 @@ function HomePage(){
       .then(response=>{setSelectedTags(response.data?.feedPreference);}).catch(err=>console.log(err));
       
       
-       axios.get(feedUrl+"/media/tags",
+       axios.get(feedUrl+"/feed/tags",
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -91,7 +91,7 @@ function HomePage(){
       if(feedPrefUpdated){
         setCurrentPage(0);
       }
-       await axios.get(feedUrl+"/media/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
+       await axios.get(feedUrl+"/feed/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -147,7 +147,7 @@ function HomePage(){
         feedPreference : selectedTags
       }
 
-      await axios.post(feedUrl+"/media/feed-preference",
+      await axios.post(feedUrl+"/feed/feed-preference",
       user,
       {
         headers:{

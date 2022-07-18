@@ -35,7 +35,7 @@ arrOfRefs.current = props.imageData.mediaComments.map((item,i)=>arrOfRefs.curren
    if(commentContent.length>0){
     formData.append("mediaId",props.imageData.mediaId)
     formData.append("commentContent",commentContent);
-     axios.post(baseUrl+"/media/comment",formData,
+     axios.post(baseUrl+"/user/media-comment",formData,
        {
            headers:{"Authorization":userCtx.getToken()}
          }).then(res=>{props.updateOneImage(props.imageData.mediaId);newCommentHandle.current.value=""}).catch(err=>console.log(err)) 
@@ -51,7 +51,7 @@ arrOfRefs.current = props.imageData.mediaComments.map((item,i)=>arrOfRefs.curren
  
     if(text!==props?.imageData?.mediaCaption){
         const payload = {mediaId:props?.imageData?.mediaId, mediaCaption:text,mediaTags:tags}
-        axios.patch(baseUrl+"/media-caption",payload,
+        axios.patch(baseUrl+"/user/media-caption",payload,
         {
             headers: { 
                 "Authorization":userCtx.getToken(),
@@ -75,7 +75,7 @@ arrOfRefs.current = props.imageData.mediaComments.map((item,i)=>arrOfRefs.curren
 }
 const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
  function deleteComment(commentId){
-    axios.delete(baseUrl+"/media/comment/"+commentId,
+    axios.delete(baseUrl+"/user/media-comment/"+commentId,
       {
           headers:{"Authorization":userCtx.getToken()}
         }).then(res=>{props.updateOneImage(props.imageData.mediaId)}).catch(err=>console.log(err)) 
@@ -88,7 +88,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
     if(commentContent.length>0){
      formData.append("commentId",commentId) 
      formData.append("commentContent",commentContent);
-      axios.post(baseUrl+"/comment/comment",formData,
+      axios.post(baseUrl+"/user/comment-reply",formData,
         {
             headers:{"Authorization":userCtx.getToken()}
           }).then(res=>{
@@ -98,7 +98,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
             }).catch(err=>console.log(err)) 
     }}
     function deleteReplyToComment(commentId){
-        axios.delete(baseUrl+"/comment/comment/"+commentId,
+        axios.delete(baseUrl+"/user/comment-reply/"+commentId,
           {
               headers:{"Authorization":userCtx.getToken()}
             }).then(res=>{props.updateOneImage(props.imageData.mediaId)}).catch(err=>console.log(err)) 
@@ -173,7 +173,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
           }
         </div>
       {/* <Modal.Footer className='d-block fs-5'> */}
-      <div style={{overflowY:"auto", height:"70vh"}}>
+      <div style={{overflowY:"auto", height:"65vh"}}>
       <div 
 
           contentEditable={editable} 

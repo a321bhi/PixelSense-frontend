@@ -20,14 +20,14 @@ let maxTries = 5;
 
 
 function connect(username,token) {
-    var socket = new SockJS(chatServiceUrl+'/gs-guide-websocket');
+    var socket = new SockJS(chatServiceUrl+'/chat/websocket');
     let stompClient = Stomp.over(socket);
     userCtx.setStompClient(stompClient);
     stompClient.connect( {headers:{ "Authorization":token}}, function (frame) {
         console.log('Connected to WS');
         stompClient.subscribe('/topic/'+username, function (message) {
             toast.info(JSON.parse(message.body).usernameFrom+": "+JSON.parse(message.body).message, {
-                position: "bottom-right",
+                position: "top-center",
                 autoClose: 2000,
                 hideProgressBar: true,
                 closeOnClick: true,

@@ -20,7 +20,7 @@ function SelectedTagPage(){
         return;
       }
          
-       await axios.get(feedUrl+"/media/feed/"+chosenTag,
+       await axios.get(feedUrl+"/feed/feed/"+chosenTag,
        {
         headers: { 
           "Authorization":userCtx.getToken()
