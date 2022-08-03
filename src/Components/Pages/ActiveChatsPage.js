@@ -2,7 +2,7 @@ import UploadMediaModal from "./UploadMediaModal";
 import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Row from 'react-bootstrap/Row';
-import Nav from 'react-bootstrap/nav';
+import Nav from 'react-bootstrap/Nav';
 import ChatPage from './ChatPage';
 import axios from "axios";
 import UserContext from "../Contexts/UserContext";
