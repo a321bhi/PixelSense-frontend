@@ -1,4 +1,3 @@
-import HeaderDarkSwitch from "./HeaderDarkSwitch";
 import LogoutSwitch from "./LogoutSwitch";
 import { Navbar,Container,Offcanvas,Nav } from "react-bootstrap";
 import MiniUserCard from '../Cards/MiniUserCard';
@@ -10,12 +9,13 @@ import UserContext from "../Contexts/UserContext";
 import { useContext } from "react";
 import axios from "axios";
 import UploadUserStory from "../Pages/UploadUserStory";
-import { feedUrl } from "../../ConfigFiles/Urls";
+import { mediaServiceUrl, userServiceUrl} from "../../ConfigFiles/Urls";
 import ThemeContext from "../Contexts/ThemeContext";
 function NavbarComponent(){
   let themeCtx = useContext(ThemeContext)
   const userCtx = useContext(UserContext);
-  const [searchResult, setSearchResult] = useState({});
+  const [tagsSearchResult, setTagsSearchResult] = useState({});
+  const [usersSearchResult, setUsersSearchResult] = useState([]);
   const searchBarHandle = useRef();
     const navigate = useNavigate();
 function messageIconClick(){
@@ -26,7 +26,9 @@ function profilePageClick(){
 }
 function search(){
   if(searchBarHandle?.current?.value!==""){
-  axios.get(feedUrl+"/feed/search/"+searchBarHandle.current.value,
+
+    //fetching tags search output
+  axios.get(mediaServiceUrl+"/service/search/"+searchBarHandle.current.value,
   {
     headers: { 
       "Authorization":userCtx.getToken()
@@ -34,15 +36,29 @@ function search(){
 },)
   .then(response =>{ 
     response.data.mediaTagsOutput = [...new Set(response.data.mediaTagsOutput)];
-    setSearchResult(response.data);
+    setTagsSearchResult(response.data);
   }).catch(err=>console.log(err));
+
+//fetching users search output
+axios.get(userServiceUrl+"/user/search/"+searchBarHandle.current.value,
+  {
+    headers: { 
+      "Authorization":userCtx.getToken()
+    }
+},)
+  .then(response =>{ 
+    //  response.data.mediaTagsOutput = [...new Set(response.data.mediaTagsOutput)];
+    setUsersSearchResult(response.data);
+  }).catch(err=>console.log(err));
+
   }else{
-    setSearchResult({});
+    setTagsSearchResult({});
+    setUsersSearchResult([]);
   }
 }
 useEffect(()=>{
 
-},[searchResult,searchBarHandle?.current?.value])
+},[tagsSearchResult,searchBarHandle?.current?.value])
     return <Navbar className={"w-100 "+(themeCtx.darkMode?"bg-dark text-light":"")} expand={'lg'} >
     <Container fluid>
       <Navbar.Toggle aria-controls={"offcanvasNavbar-expand-lg"} />
@@ -69,17 +85,16 @@ useEffect(()=>{
               data-bs-toggle="dropdown" 
               data-bs-auto-close="outside " aria-expanded="false"
             ></input>
-            <ul className="dropdown-menu" style={{left:"21%",width:"25vw",maxHeight:"45vh",overflowY:"auto"}}  aria-labelledby="dropdownMenuClickableInside">
-            <li className="text-center fw-bold dropdown-item">Tags</li>
-            {searchResult?.mediaTagsOutput?.length>0 && searchBarHandle?.current?.value!==""?
-                  searchResult?.mediaTagsOutput?.map(output=> <li><a role="button" class="dropdown-item text-primary" onClick={()=>{ navigate("/search-result/"+output)}}>#{output}</a></li>)
+            <ul className={"dropdown-menu "+(themeCtx.darkMode?" bg-dark text-light":"")}  style={{left:"21%",width:"25vw",maxHeight:"45vh",overflowY:"auto"}}  aria-labelledby="dropdownMenuClickableInside">
+            <li className={"text-center fw-bold dropdown-item "+(themeCtx.darkMode?" bg-dark text-light":"")}>Tags</li>
+            {tagsSearchResult?.mediaTagsOutput?.length>0 && searchBarHandle?.current?.value!==""?
+                  tagsSearchResult?.mediaTagsOutput?.map(output=> <li><a role="button" class="dropdown-item text-primary" onClick={()=>{ navigate("/search-result/"+output)}}>#{output}</a></li>)
                   :<li  className="text-center">No tags found</li>
             }
             <div className="border"></div>
-            <li className="text-center fw-bold dropdown-item">Users</li>
-            {searchResult?.usernameOutput?.length>0 && searchBarHandle?.csurrent?.value!==""?
-
-                  searchResult?.usernameOutput?.map((output,i)=> <li key={i} ><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
+            <li className={"text-center fw-bold dropdown-item "+(themeCtx.darkMode?" bg-dark text-light":"")}>Users</li>
+            {usersSearchResult?.length>0 && searchBarHandle?.current?.value!==""?
+            usersSearchResult?.map((output,i)=> <li key={i} ><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
                   :<li className="text-center">No users found</li>
                   
             }

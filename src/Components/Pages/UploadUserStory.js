@@ -2,8 +2,10 @@ import axios from "axios";
 import {  useRef,useState,useContext } from "react";
 import UserContext from "../Contexts/UserContext";
 import { toast } from 'react-toastify';
-import { feedUrl } from "../../ConfigFiles/Urls";
+import {   storyServiceUrl } from "../../ConfigFiles/Urls";
+import ThemeContext from "../Contexts/ThemeContext";
 function UploadUserStory(props){
+  let themeCtx = useContext(ThemeContext);
   const userCtx = useContext(UserContext);
   const modalCloseButtonHandle = useRef();
   const formHandle = useRef();
@@ -16,7 +18,7 @@ function UploadUserStory(props){
     event.preventDefault();
       const formData = new FormData();
       formData.append("image", selectedFile);
-     axios.post(feedUrl+"/feed/story",formData,{
+     axios.post(storyServiceUrl+"/story/story",formData,{
       headers: { 
         "Authorization":userCtx.getToken(),
         "Content-Type": 'multipart/form-data'
@@ -55,7 +57,7 @@ function UploadUserStory(props){
     return (
     <div className="modal fade" id={"uploadUserStoryModal"} aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div className="modal-dialog modal-lg">
-      <div className="modal-content">
+      <div className={ "modal-content "+(themeCtx.darkMode?" bg-dark text-light":"")} >
         <div className="modal-header w-100 d-block">
             <div className="d-flex">
             <div className="mx-auto display-6 text-center">Upload Story</div>

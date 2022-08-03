@@ -6,7 +6,7 @@ function HeaderDarkSwitch(){
     const themeCtx = useContext(ThemeContext);
     return(
     <div className="form-check form-switch">
-    <input className="form-check-input custom-control-input custom-checkbox bg-warn" type="checkbox" id="mySwitch" name="darkmode" onChange={()=>themeCtx.toggleDarkMode()}/>
+    <input className="form-check-input custom-control-input custom-checkbox bg-warn" checked={themeCtx.darkMode} type="checkbox" id="mySwitch" name="darkmode" onChange={()=>themeCtx.toggleDarkMode()}/>
     <div className="form-check-label" htmlFor="mySwitch"><FontAwesomeIcon icon={faCircleHalfStroke} size="2x"/></div>
     </div>)
 }

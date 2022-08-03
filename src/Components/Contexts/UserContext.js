@@ -2,7 +2,7 @@
 import { useState } from "react";
 import React from "react";
 import axios from "axios";
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { userServiceUrl } from "../../ConfigFiles/Urls";
 export const UserContext = React.createContext({
     username: "",
     token:"",
@@ -34,7 +34,7 @@ export const UserContext = React.createContext({
         localStorage.setItem('username',user);
         let formData = new FormData();
         formData.append("username",user);
-        axios.get(baseUrl+"/user/"+user,
+        axios.get(userServiceUrl+"/user/"+user,
         {
           headers:{
             "Authorization":token
@@ -73,7 +73,7 @@ export const UserContext = React.createContext({
       async function getUserProfile(){
       if(Object.keys(userProfileState).length===0){
         let profileTemp = {};
-       await axios.get(baseUrl+"/user/"+getUsername(),
+       await axios.get(userServiceUrl+"/user/"+getUsername(),
         {
           headers:{
             "Authorization":getToken()

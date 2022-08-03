@@ -1,6 +1,6 @@
 import axios from "axios";
 import {  useRef,useState } from "react";
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { userServiceUrl } from "../../ConfigFiles/Urls";
 import './RegistrationFormStyle.css';
 import { ToastContainer, toast } from 'react-toastify';
 import { countryCodes } from "../../ConfigFiles/countryCallingCodes";
@@ -38,7 +38,7 @@ function RegistrationForm(){
   function checkUsername(){
     
     if(usernameHandle.current.value!==""){
-    axios.get(baseUrl+'/user/check/'+usernameHandle.current.value)
+    axios.get(userServiceUrl+'/user/check/'+usernameHandle.current.value)
     .then(response=>{
       setUsernameConflict(response.data);
 
@@ -79,7 +79,7 @@ function RegistrationForm(){
         'password':password
 
       }
-      axios.post(baseUrl+'/user/register', user).then(
+      axios.post(userServiceUrl+'/user/register', user).then(
        response=>{
          if(response.status===200){
           console.log("User added successfully");

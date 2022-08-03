@@ -1,14 +1,15 @@
 import axios from "axios";
 import { countryCodes } from "../../ConfigFiles/countryCallingCodes";
 import {  useEffect, useRef,useState } from "react";
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { userServiceUrl } from "../../ConfigFiles/Urls";
 import './RegistrationFormStyle.css';
 import { useContext } from "react";
 import { toast } from "react-toastify";
 import UserContext from "../Contexts/UserContext";
 import moment from 'moment';
+import ThemeContext from "../Contexts/ThemeContext";
 function ProfileUpdationForm(){
-  
+  let themeCtx = useContext(ThemeContext);
   let userCtx = useContext(UserContext);
   const modalCloseButtonHandle = useRef();
   const fullNameHandle = useRef();
@@ -21,7 +22,7 @@ function ProfileUpdationForm(){
   
   const populateFields = async ()=>{
         
-    await axios.get(baseUrl+"/user/"+(userCtx.getUsername()),
+    await axios.get(userServiceUrl+"/user/"+(userCtx.getUsername()),
          {
            headers: { 
              "Authorization":userCtx.getToken()
@@ -74,7 +75,7 @@ function ProfileUpdationForm(){
         'phoneNumber':phone,
         'dateOfBirth':dateOfBirth,
       }
-      axios.patch(baseUrl+'/user/profile', user,
+      axios.patch(userServiceUrl+'/user/profile', user,
       {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -106,7 +107,7 @@ function ProfileUpdationForm(){
     return (
     <div className="modal fade" id="profileUpdateModal" aria-labelledby="profileUpdateModalLabel" aria-hidden="true">
     <div className="modal-dialog">
-      <div className="modal-content">
+      <div className={"modal-content "+(themeCtx.darkMode?" bg-dark text-light":"")} >
         <div className="modal-header w-100">
             <div className="mx-auto display-6" >Update Profile</div>
           <button type="button" className="btn-close"   data-bs-dismiss="modal"  aria-label="Close" ref={modalCloseButtonHandle}></button>

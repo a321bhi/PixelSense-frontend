@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import UserContext from "../Contexts/UserContext";
 import UploadMediaModal from "./UploadMediaModal";
-import {baseUrl, feedUrl} from '../../ConfigFiles/Urls';
+import { mediaServiceUrl, userServiceUrl} from '../../ConfigFiles/Urls';
 import axios from "axios";
 import NoProfileMedia from "../UXMessages/NoProfileMedia";
 import CardAndModal from "../Cards/CardAndModal";
@@ -39,7 +39,7 @@ function ProfilePage(){
     const getImages = async () => {
 
       let queryUsername = determineCurrentUser()?userCtx.getUsername():id;
-       await axios.get(baseUrl+"/user/all-media/"+queryUsername,
+       await axios.get(userServiceUrl+"/user/all-media/"+queryUsername,
         {
             headers: { 
               "Authorization":userCtx.getToken()
@@ -81,7 +81,7 @@ function ProfilePage(){
       };
       const updateOneImage = async (mediaId) =>{
         let updatedImage;
-        await axios.get(feedUrl+"/feed/"+mediaId,
+        await axios.get(mediaServiceUrl+"/service/media-for-update/"+mediaId,
         {
           headers: { 
             "Authorization":userCtx.getToken()
@@ -115,7 +115,7 @@ function ProfilePage(){
       }
       const fetchProfile = async ()=>{
         
-       await axios.get(baseUrl+"/user/"+(currentUser?userCtx.getUsername():id),
+       await axios.get(userServiceUrl+"/user/"+(currentUser?userCtx.getUsername():id),
             {
               headers: { 
                 "Authorization":userCtx.getToken()

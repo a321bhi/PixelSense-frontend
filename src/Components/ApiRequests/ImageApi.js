@@ -1,9 +1,9 @@
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { userServiceUrl } from "../../ConfigFiles/Urls";
 import axios from "axios";
 
 import { toast } from 'react-toastify';
 export const deleteImage = async (mediaId, refreshData, userCtx) => {
-    await axios.delete( baseUrl+"/user/media/"+mediaId,
+    await axios.delete( userServiceUrl+"/user/media/"+mediaId,
     {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -25,7 +25,7 @@ export const deleteImage = async (mediaId, refreshData, userCtx) => {
 };
 export const unlikeImage = async (mediaId, refreshData, userCtx) => {
 
-    await axios.delete(baseUrl+"/user/media-likes/"+mediaId,
+    await axios.delete(userServiceUrl+"/user/media-likes/"+mediaId,
     {
     headers: { 
             "Authorization":userCtx.getToken()
@@ -36,7 +36,7 @@ export const unlikeImage = async (mediaId, refreshData, userCtx) => {
 export const likeImage = async (mediaId, refreshData, userCtx) => {
     var bodyFormData = new FormData();
     bodyFormData.append('mediaId', mediaId);
-    await axios.post( baseUrl+"/user/media-likes",
+    await axios.post( userServiceUrl+"/user/media-likes",
     bodyFormData,
     {
         headers: { 
@@ -48,7 +48,7 @@ export const likeImage = async (mediaId, refreshData, userCtx) => {
 export const likeComment = async (commentId, refreshData, userCtx) => {
     var bodyFormData = new FormData();
     bodyFormData.append('commentId', commentId);
-    await axios.post( baseUrl+"/user/comment-likes",
+    await axios.post( userServiceUrl+"/user/comment-likes",
     bodyFormData,
     {
        headers: { 
@@ -59,7 +59,7 @@ export const likeComment = async (commentId, refreshData, userCtx) => {
     };
 export const unlikeComment = async (commentId, refreshData, userCtx) => {
 
-    await axios.delete(baseUrl+"/user/comment-likes/"+commentId,
+    await axios.delete(userServiceUrl+"/user/comment-likes/"+commentId,
     {
     headers: { 
             "Authorization":userCtx.getToken()

@@ -3,12 +3,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {faPenToSquare,faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { storyServiceUrl, userServiceUrl } from "../../ConfigFiles/Urls";
 import UploadMediaModal from "../Pages/UploadMediaModal";
 import FollowersModal from "./FollowersModal";
 import StoryCarousel from "./StoryCarousel";
 import ProfileUpdationForm from "../Forms/ProfileUpdationForm";
-import { feedUrl } from "../../ConfigFiles/Urls";
 function UserCard(props){
     let [showStories,setShowStories] = useState(false);
     let [showArchivedStories,setShowArchivedStories] = useState(false);
@@ -24,7 +23,7 @@ function UserCard(props){
     const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?bioPlaceHolder:""));
     const [editable,setEditable] = useState(false);
     const fetchStories = ()=>{
-        axios.get(feedUrl+"/feed/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
+        axios.get(storyServiceUrl+"/story/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -44,7 +43,7 @@ function UserCard(props){
             }).catch(err=>console.log(err));
     }
     const fetchArchivedStories = ()=>{
-        axios.get(feedUrl+"/feed/archived-stories/"+userCtx.getUsername(),
+        axios.get(storyServiceUrl+"/story/archived-stories/"+userCtx.getUsername(),
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -55,7 +54,7 @@ function UserCard(props){
     
         const formData = new FormData();
             formData.set("usernameToFollow",props.userProfile.username);
-            axios.post(baseUrl+"/user/follow",formData,
+            axios.post(userServiceUrl+"/user/follow",formData,
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -63,7 +62,7 @@ function UserCard(props){
             }).then(response=>{props.fetchProfile();}).catch(err=>console.log(err));
     }
     const unfollowUser=()=>{
-            axios.delete(baseUrl+"/user/follow/"+props.userProfile.username,
+            axios.delete(userServiceUrl+"/user/follow/"+props.userProfile.username,
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -81,7 +80,7 @@ function UserCard(props){
         setEditable(false);
         if(description!==bioPlaceHolder){
             const bio = { bio:descriptionRef.current.innerHTML}
-            axios.patch(baseUrl+"/user/bio",bio,
+            axios.patch(userServiceUrl+"/user/bio",bio,
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -96,7 +95,7 @@ function UserCard(props){
         }
     }
     function deleteProfilePic(){
-        axios.delete(baseUrl+"/media/profile-pic",
+        axios.delete(userServiceUrl+"/user/profile-pic",
             {
                 headers: { 
                     "Authorization":userCtx.getToken(),
@@ -125,7 +124,7 @@ function UserCard(props){
                     src={"data:image/jpg;base64,"+props.userProfile.profilePicAsBase64}
                     alt="Image here" 
                     onClick={()=>{if(userStories.length>0){setShowStories(true)}}}
-                    style={{height:"15vh",width:"15vh",objectFit:"cover"}}
+                    style={{height:"15vh",width:"16vh",objectFit:"cover"}}
                     
                 />{props.currentUser?
             <div className="btn-group position-absolute top-0 start-100">

@@ -11,11 +11,20 @@ export const ThemeContext = React.createContext(
 function ThemeContextProvider(props){
 
   const [themeState, setThemeState] = useState("text-light bg-dark");
-  const [darkModeState, setDarkModeState] = useState(false);
+  const [darkModeState, setDarkModeState] = useState(localStorage.getItem("theme")==null?false:localStorage.getItem("theme"));
   
   const context={
     theme:themeState,
-    toggleDarkMode:()=>{setDarkModeState(!darkModeState);},
+    toggleDarkMode:()=>{
+      let themeFromLocal = localStorage.getItem("theme");
+      if(themeFromLocal!==null){
+        setDarkModeState(themeFromLocal==="false"?true:false);
+        localStorage["theme"]=(themeFromLocal==="false"?true:false);        
+      }else{
+        localStorage.setItem("theme",!darkModeState);
+        setDarkModeState(!darkModeState);
+      }
+    },
     darkMode:darkModeState
   };
   return <ThemeContext.Provider value={context}>

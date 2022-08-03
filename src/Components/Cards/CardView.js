@@ -31,8 +31,10 @@ function getCommentCount(){
 }
 
 return (
-  <div className={"col g-3 "+(themeCtx.darkMode?"bg-dark text-light":"")}>
-<div className="card">
+  <div className={"col "+(themeCtx.darkMode?" bg-dark text-light ":"")}>
+<div className="card border-0" style={(themeCtx.darkMode?
+{boxShadow: "1px 1px 4px 4px rgba(255,255,255,0.4)"}:
+{boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"})}>
 {/* <div className={"img-counters "+(themeCtx.darkMode?" text-dark":" text-light")} 
 style={(themeCtx.darkMode?{backgroundColor:"rgba(255, 255,255, 0.4)"}:{backgroundColor:"rgba(0, 0, 0, 0.4)"})} role="button" onClick={props.handleShow}>
 <div className="counters fs-5">

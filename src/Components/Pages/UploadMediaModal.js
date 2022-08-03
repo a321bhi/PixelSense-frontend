@@ -1,7 +1,7 @@
 import axios from "axios";
 import {  useRef,useState,useContext } from "react";
 import UserContext from "../Contexts/UserContext";
-import { baseUrl } from "../../ConfigFiles/Urls";
+import { baseUrl, userServiceUrl } from "../../ConfigFiles/Urls";
 import { toast } from 'react-toastify';
 import ThemeContext from "../Contexts/ThemeContext";
 function UploadMediaModal(props){
@@ -26,11 +26,10 @@ function UploadMediaModal(props){
         //let tagsToBeUploaded =tagsState.map(tags=>tags.replace("#",""));
         //tagsToBeUploaded = tagsToBeUploaded?.length>0?tagsToBeUploaded:[];
         let tagsToBeUploaded = tagsRef.current.innerHTML.split(",").map(tags=>tags.replace("#",""));
-        // tagsToBeUploaded =tagsToBeUploaded
         formData.append("mediaTags",tagsToBeUploaded);
         formData.append("mediaCaption",captionToBeUploaded);
       }
-      const urlForUpload = baseUrl + (props?.profilePic?"/user/profile-pic":"/user/media/");
+      const urlForUpload = userServiceUrl + (props?.profilePic?"/user/profile-pic":"/user/media/");
      axios.post(urlForUpload,formData,{
       headers: { 
         "Authorization":userCtx.getToken(),

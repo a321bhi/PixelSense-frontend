@@ -3,7 +3,7 @@ import { useContext, useRef } from 'react';
 import UserContext from '../Contexts/UserContext';
 import RegistrationForm from "./RegistrationForm";
 import axios from 'axios';
-import { baseUrl, chatServiceUrl } from '../../ConfigFiles/Urls';
+import { userServiceUrl, chatServiceUrl } from '../../ConfigFiles/Urls';
 import SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 import { ToastContainer, toast } from 'react-toastify';
@@ -56,7 +56,7 @@ function connect(username,token) {
             'username':username,
             'password':password
           }
-        axios.post(baseUrl+'/user/login', userCredential).then(
+        axios.post(userServiceUrl+'/user/login', userCredential).then(
             response=>{
               if(response.status===200){
                localStorage.setItem("USERNAME", username);

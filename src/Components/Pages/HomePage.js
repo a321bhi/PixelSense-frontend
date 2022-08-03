@@ -9,7 +9,7 @@ import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
 import Button from 'react-bootstrap/Button';
 import { Overlay } from "react-bootstrap";
 import SelectOrFollowMessage from "../UXMessages/SelectOrFollowMessage";
-import { feedUrl } from "../../ConfigFiles/Urls";
+import { mediaServiceUrl } from "../../ConfigFiles/Urls";
 import ThemeContext from "../Contexts/ThemeContext";
 
 function HomePage(){
@@ -25,7 +25,7 @@ function HomePage(){
   let [feedPrefUpdated, setFeedPrefUpdated] =  useState(false);
   const updateOneImage = async (mediaId) =>{
     let updatedImage;
-    await axios.get(feedUrl+"/feed/"+mediaId,
+    await axios.get(mediaServiceUrl+"/service/media-for-update/"+mediaId,
     {
       headers: { 
         "Authorization":userCtx.getToken()
@@ -57,7 +57,7 @@ function HomePage(){
     } ))
   }
     const fetchTags = ()=>{
-      axios.get(feedUrl+"/feed/feed-preference/"+userCtx.getUsername(),
+      axios.get(mediaServiceUrl+"/service/feed-preference/"+userCtx.getUsername(),
       {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -66,7 +66,7 @@ function HomePage(){
       .then(response=>{setSelectedTags(response.data?.feedPreference);}).catch(err=>console.log(err));
       
       
-       axios.get(feedUrl+"/feed/tags",
+       axios.get(mediaServiceUrl+"/service/tags",
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -93,7 +93,7 @@ function HomePage(){
       if(feedPrefUpdated){
         setCurrentPage(0);
       }
-       await axios.get(feedUrl+"/feed/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
+       await axios.get(mediaServiceUrl+"/service/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -149,7 +149,7 @@ function HomePage(){
         feedPreference : selectedTags
       }
 
-      await axios.post(feedUrl+"/feed/feed-preference",
+      await axios.post(mediaServiceUrl+"/feed/feed-preference",
       user,
       {
         headers:{

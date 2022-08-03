@@ -8,6 +8,7 @@ function MiniUserCard(props){
     let userCtx = useContext(UserContext);
     let [pic,setPic] = useState("");
     const navigate= useNavigate();
+    
     function loadProfilePic(){
     if(props?.source===undefined){
         getProfilePic(props?.username,userCtx)
@@ -15,6 +16,7 @@ function MiniUserCard(props){
         .catch(err=>console.log(err));
     }
 }
+
 useEffect(()=>{
     loadProfilePic();
 },[])
