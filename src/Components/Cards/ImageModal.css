@@ -3,6 +3,9 @@
     width: 100%;
     object-fit: contain;
 }
+.modal-85w{
+  min-width: 85vw;
+}
 .custom-image-div {
     
     min-width:60%;

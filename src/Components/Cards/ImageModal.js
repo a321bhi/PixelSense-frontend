@@ -118,17 +118,19 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       }
       return caption;
     }
-  
+
    return props.showModal?<Modal
    className="bg-dark bg-opacity-75"
    size="xl"
         show={props.showModal}
         onHide={props.handleClose}
+        dialogClassName="modal-85w"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      
     >
       <div className={"d-flex "+(themeCtx.darkMode?"bg-dark text-light":"")}>
-      <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.getUsername():props.mediaPostedBy}/></div>
+      <div className="m-2 fs-4"><MiniUserCard username={props.currentUser?userCtx.getUsername():props.mediaPostedBy}/></div>
       <div className="text-end pt-3 pe-3" style={{width:"100%"}}>
         <button className={"btn-close "+(themeCtx.darkMode?"bg-light":"")} type="button" aria-label="Close" onClick={props.handleClose}/>
       </div>
@@ -210,7 +212,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
                       {item.commentContent}
                       </div>
                       <div className='col-2 col-md-1'>
-                      {item.commentByUser.userName===userCtx.username?
+                      {item.commentByUser===userCtx.username?
                           <div className="btn-group align-top float-end dropstart">
                             <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                               <FontAwesomeIcon icon={faEllipsisVertical}></FontAwesomeIcon>

@@ -33,7 +33,7 @@ function SelectedTagPage(){
                     row.createdAt = date.toTimeString().substring(0,9)+date.toDateString().substring(4);
                     return row;
                   })
-                  media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+                  // media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.username)});
            
                   media.mediaComments?.sort((row1,row2)=>{
                     var date1 = new Date(row1.createdAt);

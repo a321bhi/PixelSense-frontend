@@ -32,7 +32,7 @@ function HomePage(){
         "Authorization":userCtx.getToken()
       }
   },).then(res => updatedImage=res.data).catch(err=>console.log(err));
-    // updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+    // updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.username)});
 
     updatedImage.mediaComments?.sort((row1,row2)=>{
       var date1 = new Date(row1.createdAt);
@@ -46,7 +46,7 @@ function HomePage(){
           var date2 = new Date(row2.createdAt);
           return date1.getTime()-date2.getTime();
         })
-        // return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+        // return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.username)})
       }
     })
     setFeedArr(feedArr.map(row=>{
@@ -108,7 +108,7 @@ function HomePage(){
 
                 response.data.map(media=>{
             
-                  // media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+                  // media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.username)});
 
                   media.mediaComments?.sort((row1,row2)=>{
                     var date1 = new Date(row1.createdAt);
@@ -122,7 +122,7 @@ function HomePage(){
                         var date2 = new Date(row2.createdAt);
                         return date1.getTime()-date2.getTime();
                       })
-                      // return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+                      // return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.username)})
                     }
                   })
                   return media;

@@ -19,10 +19,10 @@ function App() {
       <UserContextProvider>
         <ThemeContext.Consumer>
           {value=><div className={value.darkMode?" bg-dark text-light ":""}>
-        <div style={{height:"10vh"}}>
+        <div style={{height:"10vh",maxHeight:"10vh"}}>
       <PageHeader/>
       </div>
-    <div className="App" style={{minHeight:"90vh"}}>
+    <div className="App" style={{height:"90vh"}}>
       <Routes>
         <Route exact path="/" element={<LoginCheck><WelcomePage/></LoginCheck>}/>
         <Route exact path="/login" element={<LoginCheck><LoginPage/></LoginCheck>}/>

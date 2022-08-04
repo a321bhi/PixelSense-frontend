@@ -23,7 +23,7 @@ function CommentComponent(props){
           {item.commentContent}
           </div>
           <div className="col-2 col-md-1">
-          {item.commentByUser.userName===userCtx.username?
+          {item.commentByUser===userCtx.username?
               <div className="btn-group align-top float-end dropstart">
                 <div type="button" id="editImage" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                   <FontAwesomeIcon icon={faEllipsisVertical}></FontAwesomeIcon>

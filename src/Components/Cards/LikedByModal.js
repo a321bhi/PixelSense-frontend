@@ -15,7 +15,7 @@ function LikedByModal(props) {
       ><Modal.Header className={"text-center w-100 fs-4 "+(themeCtx.darkMode?" bg-dark text-light":"")} >Liked by</Modal.Header>
         <Modal.Body className={(themeCtx.darkMode?" bg-dark text-light":"")} style={{height:"60vh",overflowY:"auto"}}>
     {
-     props.likedBy?.map((row,key)=><div key={key} className="border rounded-3 p-2"><MiniUserCard username={row}/></div>) 
+     props.likedBy?.map((row,key)=><div key={key} className="border rounded-3 p-2" onClick={()=>props.onHide()}><MiniUserCard username={row}/></div>) 
     }
         </Modal.Body>
         <Modal.Footer className={(themeCtx.darkMode?" bg-dark text-light":"")} >
