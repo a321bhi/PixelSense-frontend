@@ -19,7 +19,7 @@ function CommentComponent(props){
       {props.commentData?.map(
         (item,i)=><li key={i} className={"list-group-item  d-flex row "+(themeCtx.darkMode?" bg-dark text-light border border-white ":"")}>
           <div className='col-10 col-md-11'>
-          <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser.userName}/></span>
+          <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser}/></span>
           {item.commentContent}
           </div>
           <div className="col-2 col-md-1">

@@ -3,7 +3,7 @@ import { Navbar,Container,Offcanvas,Nav } from "react-bootstrap";
 import MiniUserCard from '../Cards/MiniUserCard';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from 'react-router-dom';
-import { faCommentDots, faCameraRetro,faIdCard} from "@fortawesome/free-solid-svg-icons";
+import { faHomeUser, faCommentDots, faCameraRetro,faIdCard} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import UserContext from "../Contexts/UserContext";
 import { useContext } from "react";
@@ -24,10 +24,11 @@ function messageIconClick(){
 function profilePageClick(){
     navigate('/profile',);
 }
+function navigateToWelcome(){
+    navigate('/home');
+}
 function search(){
   if(searchBarHandle?.current?.value!==""){
-
-    //fetching tags search output
   axios.get(mediaServiceUrl+"/service/search/"+searchBarHandle.current.value,
   {
     headers: { 
@@ -73,8 +74,9 @@ useEffect(()=>{
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-        <div className="d-flex w-100 justify-content-center">
+        <div className="d-flex w-100 justify-content-center ">
             <input
+            onClick={(e)=>console.log(e)}
               type="search"
               placeholder="Search"
               className="me-2 w-50 dropdown-toggle form-control "
@@ -88,20 +90,20 @@ useEffect(()=>{
             <ul className={"dropdown-menu "+(themeCtx.darkMode?" bg-dark text-light":"")}  style={{left:"21%",width:"25vw",maxHeight:"45vh",overflowY:"auto"}}  aria-labelledby="dropdownMenuClickableInside">
             <li className={"text-center fw-bold dropdown-item "+(themeCtx.darkMode?" bg-dark text-light":"")}>Tags</li>
             {tagsSearchResult?.mediaTagsOutput?.length>0 && searchBarHandle?.current?.value!==""?
-                  tagsSearchResult?.mediaTagsOutput?.map(output=> <li><a role="button" class="dropdown-item text-primary" onClick={()=>{ navigate("/search-result/"+output)}}>#{output}</a></li>)
+                  tagsSearchResult?.mediaTagsOutput?.map((output,key)=> <li key={key}><a role="button" className="dropdown-item text-primary" onClick={()=>{ navigate("/search-result/"+output)}}>#{output}</a></li>)
                   :<li  className="text-center">No tags found</li>
             }
             <div className="border"></div>
             <li className={"text-center fw-bold dropdown-item "+(themeCtx.darkMode?" bg-dark text-light":"")}>Users</li>
             {usersSearchResult?.length>0 && searchBarHandle?.current?.value!==""?
-            usersSearchResult?.map((output,i)=> <li key={i} ><a role="button" class="dropdown-item"><MiniUserCard username={output}/></a></li>)
+            usersSearchResult?.map((output,i)=> <li key={i} ><a role="button" className="dropdown-item"><MiniUserCard username={output}/></a></li>)
                   :<li className="text-center">No users found</li>
                   
             }
             </ul>
           </div>
           <Nav className="justify-content-end flex-grow-1 pe-3">
-           
+          <Nav.Link type="button" onClick={navigateToWelcome}><FontAwesomeIcon style={(themeCtx.darkMode?{color:"white"}:{})} icon={faHomeUser} size="2x"/></Nav.Link>
             <Nav.Link type="button" onClick={messageIconClick}><FontAwesomeIcon style={(themeCtx.darkMode?{color:"white"}:{})} icon={faCommentDots} size="2x"/></Nav.Link>
             
             {/* story start */}

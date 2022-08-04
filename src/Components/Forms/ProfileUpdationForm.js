@@ -147,11 +147,11 @@ function ProfileUpdationForm(){
                     <select className="form-select" aria-label="select country code"
                               name="cc" 
                               id="cc" 
-                              
+                              defaultValue="cCode"
                               onChange={flipCountryName}
                               ref={countryCodeHandle}
                           >
-                      <option selected>Country code</option>
+                      <option value="cCode">Country code</option>
                       {countryCodes.countries.map((code,i)=>{
                           return <option key={i} value={code.code} label={code.name+" "+code.code}>{code.code}</option>
                       })}

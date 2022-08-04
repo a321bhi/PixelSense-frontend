@@ -15,6 +15,7 @@ import ThemeContext from "../Contexts/ThemeContext";
 function HomePage(){
   let themeCtx = useContext(ThemeContext);
   const [selectedTags, setSelectedTags] = useState([]);
+  let [hasTagsUpdate, setHasTagsUpdated] = useState(false);
   const [currentPage,setCurrentPage] = useState(0);
   let [hasMoreData,setHasMoreData] = useState(true);
   let userCtx = useContext(UserContext);
@@ -31,7 +32,7 @@ function HomePage(){
         "Authorization":userCtx.getToken()
       }
   },).then(res => updatedImage=res.data).catch(err=>console.log(err));
-    updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+    // updatedImage.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
 
     updatedImage.mediaComments?.sort((row1,row2)=>{
       var date1 = new Date(row1.createdAt);
@@ -45,7 +46,7 @@ function HomePage(){
           var date2 = new Date(row2.createdAt);
           return date1.getTime()-date2.getTime();
         })
-        return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+        // return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
       }
     })
     setFeedArr(feedArr.map(row=>{
@@ -104,9 +105,10 @@ function HomePage(){
           if(response.data?.length===0){
             setHasMoreData(false);
           }
+
                 response.data.map(media=>{
             
-                  media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
+                  // media.mediaComments?.forEach(row=>{row.commentLikedBy = row.commentLikedBy?.map(innerRow=>innerRow.userName)});
 
                   media.mediaComments?.sort((row1,row2)=>{
                     var date1 = new Date(row1.createdAt);
@@ -120,7 +122,7 @@ function HomePage(){
                         var date2 = new Date(row2.createdAt);
                         return date1.getTime()-date2.getTime();
                       })
-                      return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
+                      // return row.commentsOnComment.forEach(row=>{row.commentLikedBy = row.commentLikedBy.map(innerRow=>innerRow.userName)})
                     }
                   })
                   return media;
@@ -149,7 +151,7 @@ function HomePage(){
         feedPreference : selectedTags
       }
 
-      await axios.post(mediaServiceUrl+"/feed/feed-preference",
+      await axios.post(mediaServiceUrl+"/service/feed-preference",
       user,
       {
         headers:{
@@ -179,7 +181,11 @@ function HomePage(){
       fetchFeed();
     },[feedPrefUpdated])
 return (<div className={themeCtx.darkMode?"bg-dark text-light":""}>
-  <div> <Button ref={target} onClick={async () => {setShow(!show); updateFeedPreference();}}  >
+  <div> <Button ref={target} onClick={async () => {setShow(!show);
+    if(hasTagsUpdate){
+      updateFeedPreference();
+      setHasTagsUpdated(false);
+    } }}  >
     <FontAwesomeIcon icon={faAsterisk}></FontAwesomeIcon>
     </Button>
     <Overlay target={target.current} show={show} placement="right">
@@ -197,9 +203,9 @@ return (<div className={themeCtx.darkMode?"bg-dark text-light":""}>
        maxHeight:"50vh"
      }}>
       <div className="row row-cols-3 ms-2">
-       {tags?.map(item=>{
-          return <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id={"check"+item }
+       {tags?.map((item,key)=>{
+          return <div key={key} className="form-check">
+                <input className="form-check-input" type="checkbox" value="" id={"check"+item }
                       defaultChecked={selectedTags?.includes(item)?true:false}
                       onChange={()=>{
                         if(selectedTags.includes(item)){
@@ -207,9 +213,10 @@ return (<div className={themeCtx.darkMode?"bg-dark text-light":""}>
                           }else{
                             setSelectedTags([...selectedTags,item])
                           }
+                          setHasTagsUpdated(true);
                         }
                       }/>
-                <label class="form-check-label ms-2" for={"check"+item}>{item}</label>
+                <label className="form-check-label ms-2" htmlFor={"check"+item}>{item}</label>
               </div>
           }
         )

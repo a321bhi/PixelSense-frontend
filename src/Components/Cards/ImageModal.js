@@ -59,7 +59,7 @@ arrOfRefs.current = props.imageData.mediaComments.map((item,i)=>arrOfRefs.curren
             headers: { 
                 "Authorization":userCtx.getToken(),
             }
-        }).then(response=>{console.log(response);props.updateOneImage(props.imageData.mediaId);})
+        }).then(response=>{props.updateOneImage(props.imageData.mediaId);})
         .catch(err=>{
             console.log(err);
           }
@@ -118,6 +118,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       }
       return caption;
     }
+  
    return props.showModal?<Modal
    className="bg-dark bg-opacity-75"
    size="xl"
@@ -127,7 +128,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       centered
     >
       <div className={"d-flex "+(themeCtx.darkMode?"bg-dark text-light":"")}>
-      <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.getUsername():props.usernamePostedBy}/></div>
+      <div className="m-2"><MiniUserCard username={props.currentUser?userCtx.getUsername():props.mediaPostedBy}/></div>
       <div className="text-end pt-3 pe-3" style={{width:"100%"}}>
         <button className={"btn-close "+(themeCtx.darkMode?"bg-light":"")} type="button" aria-label="Close" onClick={props.handleClose}/>
       </div>
@@ -205,7 +206,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
                     {props.imageData.mediaComments.map(
                     (item,i)=><li key={i} className={"list-group-item ms-1 d-flex row "+(themeCtx.darkMode?" bg-dark text-light border border-light":"")}>
                       <div className='col-10 col-md-11'>
-                      <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser.userName}/></span>
+                      <span className='fw-bold me-3 float-start'><MiniUserCard username={item.commentByUser}/></span>
                       {item.commentContent}
                       </div>
                       <div className='col-2 col-md-1'>

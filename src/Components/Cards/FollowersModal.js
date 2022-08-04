@@ -18,12 +18,12 @@ function FollowersModal(props) {
         <Tabs  fill defaultActiveKey={props.selectedTab} id="uncontrolled-tab-example" className="mb-3 mx-auto w-75 text-center ">
   <Tab eventKey="followers" title="Followers" className="mx-auto w-75">
     {
-     props.follower?.map(row=><div className="border rounded-3 p-2"><MiniUserCard username={row}/></div>) 
+     props.follower?.map((row,key)=><div key={key} className="border rounded-3 p-2"><MiniUserCard username={row}/></div>) 
     }
   </Tab>
   <Tab eventKey="following" title="Following" className="mx-auto w-75">
   {
-     props.following?.map(row=><div className="border rounded-3 p-2"><MiniUserCard username={row}/></div>) 
+     props.following?.map((row,key)=><div key={key} className="border rounded-3 p-2"><MiniUserCard username={row}/></div>) 
   }
 
   </Tab>

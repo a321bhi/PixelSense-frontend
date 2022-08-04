@@ -8,6 +8,7 @@ import UploadMediaModal from "../Pages/UploadMediaModal";
 import FollowersModal from "./FollowersModal";
 import StoryCarousel from "./StoryCarousel";
 import ProfileUpdationForm from "../Forms/ProfileUpdationForm";
+import {toast} from 'react-toastify';
 function UserCard(props){
     let [showStories,setShowStories] = useState(false);
     let [showArchivedStories,setShowArchivedStories] = useState(false);
@@ -20,7 +21,7 @@ function UserCard(props){
     const userCtx = useContext(UserContext);
     const descriptionRef = useRef();
     const [textAreaClass,setTextAreaClass] = useState("w-75 p-2 me-3 fst-italic");
-    const [description,setDescription] = useState(props?.userProfile?.profileDescription?props.userProfile.profileDescription:(props.currentUser?bioPlaceHolder:""));
+    const [description,setDescription] = useState(props?.userProfile?.profileBio?props.userProfile.profileBio:(props.currentUser?bioPlaceHolder:""));
     const [editable,setEditable] = useState(false);
     const fetchStories = ()=>{
         axios.get(storyServiceUrl+"/story/stories/"+(props.currentUser?userCtx.getUsername():props.userProfile.username),
@@ -85,7 +86,17 @@ function UserCard(props){
                 headers: { 
                     "Authorization":userCtx.getToken(),
                 }
-            }).then(response=>{props.fetchProfile();})
+            }).then(response=>{props.fetchProfile();
+                toast.info('Bio updated!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    pauseOnFocusLoss:false
+                    });})
             .catch(err=>{
                 console.log(err);
                 setDescription(bioPlaceHolder);

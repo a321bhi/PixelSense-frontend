@@ -82,7 +82,6 @@ function RegistrationForm(){
       axios.post(userServiceUrl+'/user/register', user).then(
        response=>{
          if(response.status===200){
-          console.log("User added successfully");
           toast.info('User added successfully!', {
             position: "top-center",
             autoClose: 3000,

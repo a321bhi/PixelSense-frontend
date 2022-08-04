@@ -29,7 +29,6 @@ function getCommentCount(){
   props.imageData.mediaComments.forEach(current =>totalComments+=(current.commentsOnComment===undefined?0:current.commentsOnComment.length));
   return totalComments;
 }
-
 return (
   <div className={"col "+(themeCtx.darkMode?" bg-dark text-light ":"")}>
 <div className="card border-0" style={(themeCtx.darkMode?
@@ -42,7 +41,7 @@ style={(themeCtx.darkMode?{backgroundColor:"rgba(255, 255,255, 0.4)"}:{backgroun
 &ensp;{getCommentCount()} <FontAwesomeIcon style={(themeCtx.darkMode?{color:"black"}:{color:"white"})}  icon={faComment} size="2x"/></div>
 </div> */}
               <div className={"card-body "+(themeCtx.darkMode?"bg-dark text-light":"")} style={{minHeight:"20vh"}}>
-                <h5 className="card-title">{props.currentUser||props.profilePage?"":<MiniUserCard source={props.imageData.profilePicOfUsernamePostedByBase64} username={props.imageData.usernamePostedBy} >Hello</MiniUserCard>}</h5>
+                <h5 className="card-title">{props.currentUser||props.profilePage?"":<MiniUserCard source={props.imageData.profilePicOfmediaPostedByBase64} username={props.imageData.mediaPostedBy} >Hello</MiniUserCard>}</h5>
                 <div className={spinnerClasses} style={{height:"40px",width:"40px"}} role="status">
                 </div>
                 <Spinner className={spinnerClasses} animation="border" role="status">

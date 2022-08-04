@@ -19,8 +19,8 @@ centered
 <Modal.Body className={(themeCtx.darkMode?"bg-dark text-light":"")} >
 <Carousel variant="dark" style={{height:"70vh"}}>
    { props?.images.length>0?
-        props.images.map(item=>{
-        return <Carousel.Item   interval={5000} style={{height:"70vh",width:"100%"}}>
+        props.images.map((item,key)=>{
+        return <Carousel.Item key={key}  interval={5000} style={{height:"70vh",width:"100%"}}>
         <img className="d-block mx-auto"
             src={"data:image/jpg;base64,"+item.imageAsBase64}
             style={{objectFit:"contain",height:"80%", width:"80%"}}

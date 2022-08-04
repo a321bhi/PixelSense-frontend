@@ -11,7 +11,7 @@ function CardAndModal(props){
     return <div className="col g-4 ">
         <CardView {...props} handleShow={handleShow} />
         <ImageModal closeRef={modalCloseButtonHandle}
-                usernamePostedBy={props.usernamePostedBy?props.usernamePostedBy:props.imageData.usernamePostedBy}
+                mediaPostedBy={props.mediaPostedBy?props.mediaPostedBy:props.imageData.mediaPostedBy}
                 refreshData={props.refreshData}
                 local={props.local?props.local:false}
                 currentUser={props.currentUser}

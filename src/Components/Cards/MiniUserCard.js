@@ -16,7 +16,6 @@ function MiniUserCard(props){
         .catch(err=>console.log(err));
     }
 }
-
 useEffect(()=>{
     loadProfilePic();
 },[])
