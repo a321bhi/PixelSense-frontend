@@ -71,10 +71,11 @@ function ProfilePage(){
               return media;
             })
             response.data.sort((row1,row2)=>{
-              var date1 = new Date(row1.mediaDate);
-              var date2 = new Date(row2.mediaDate);
+              var date1 = new Date(row1.createdAt);
+              var date2 = new Date(row2.createdAt);
               return date2.getTime()-date1.getTime();
             });
+            
             setArr(response.data);
           setMediaLoaded(true);
         }).catch(err=>console.log(err))

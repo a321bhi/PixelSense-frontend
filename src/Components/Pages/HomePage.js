@@ -94,7 +94,7 @@ function HomePage(){
       if(feedPrefUpdated){
         setCurrentPage(0);
       }
-       await axios.get(mediaServiceUrl+"/service/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=mediaDate&tags="+queryTags.toString(),
+       await axios.get(mediaServiceUrl+"/service/feed-paginated/"+"?page="+(feedPrefUpdated?0:currentPage)+"&size=6&sortDir=desc&sort=createdAt&tags="+queryTags.toString(),
        {
         headers: { 
           "Authorization":userCtx.getToken()
@@ -129,10 +129,11 @@ function HomePage(){
                 })
 
                 response.data.sort((row1,row2)=>{
-                  var date1 = new Date(row1.mediaDate);
-                  var date2 = new Date(row2.mediaDate);
+                  var date1 = new Date(row1.createdAt);
+                  var date2 = new Date(row2.createdAt);
                   return date2.getTime()-date1.getTime();
                 });
+                
                 setCurrentPage(feedPrefUpdated?1:currentPage+1);
                 if(!feedPrefUpdated){
                   setFeedArr([...feedArr,...response.data]);

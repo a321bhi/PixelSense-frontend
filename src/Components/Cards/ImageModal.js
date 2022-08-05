@@ -29,7 +29,7 @@ let themeCtx = useContext(ThemeContext);
   const newCommentHandle = useRef();
   const [commentIdForReply,setCommentIdForReply] = useState("");
   const captionHandle = useRef();
-  var date = new Date(props.imageData.mediaDate);
+  var date = new Date(props.imageData.createdAt);
 const arrOfRefs = useRef([]);
 arrOfRefs.current = props.imageData.mediaComments.map((item,i)=>arrOfRefs.current[i]??createRef());
  function addComment(){
@@ -197,7 +197,7 @@ const updateOneImage =()=>{props.updateOneImage(props.imageData.mediaId);}
       <div>{props.imageData.mediaTags?props.imageData.mediaTags.map((tag,i)=>{
        return <span key={i} className='text-primary'>{tag+" "}</span>
       }):""}</div>
-      <div className={(themeCtx.darkMode?" text-light":" text-muted") }>{props.imageData.mediaDate?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
+      <div className={(themeCtx.darkMode?" text-light":" text-muted") }>{props.imageData.createdAt?date.toTimeString().substring(0,9)+date.toDateString().substring(4):""}</div>
         
 
         <div className={"d-block "} >

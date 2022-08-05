@@ -10,18 +10,18 @@ export const ThemeContext = React.createContext(
 
 function ThemeContextProvider(props){
 
-  const [themeState, setThemeState] = useState("text-light bg-dark");
-  const [darkModeState, setDarkModeState] = useState(localStorage.getItem("theme")==null?false:localStorage.getItem("theme"));
-  
+  const [themeState, setThemeState] = useState(" text-light bg-dark");
+  const [darkModeState, setDarkModeState] = useState(localStorage.getItem("theme")==null?false:localStorage.getItem("theme")==="false"?false:true);
+
   const context={
     theme:themeState,
     toggleDarkMode:()=>{
       let themeFromLocal = localStorage.getItem("theme");
       if(themeFromLocal!==null){
         setDarkModeState(themeFromLocal==="false"?true:false);
-        localStorage["theme"]=(themeFromLocal==="false"?true:false);        
+        localStorage["theme"]=(themeFromLocal==="false"?"true":"false");        
       }else{
-        localStorage.setItem("theme",!darkModeState);
+        localStorage.setItem("theme",""+!darkModeState);
         setDarkModeState(!darkModeState);
       }
     },

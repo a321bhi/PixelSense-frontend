@@ -60,7 +60,7 @@ axios.get(userServiceUrl+"/user/search/"+searchBarHandle.current.value,
 useEffect(()=>{
 
 },[tagsSearchResult,searchBarHandle?.current?.value])
-    return <Navbar className={"w-100 "+(themeCtx.darkMode?"bg-dark text-light":"")} expand={'lg'} >
+    return <Navbar className={"w-100 "+(themeCtx.darkMode?"bg-dark text-light":"")} expand={'sm'} >
     <Container fluid>
       <Navbar.Toggle aria-controls={"offcanvasNavbar-expand-lg"} />
       <Navbar.Offcanvas
