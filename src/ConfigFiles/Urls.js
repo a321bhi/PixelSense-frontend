@@ -1,5 +1,6 @@
 
-let ip="ec2-3-111-217-124.ap-south-1.compute.amazonaws.com";
+// let ip="ec2-3-111-217-124.ap-south-1.compute.amazonaws.com";
+let ip="35.244.57.66"
 
 export const userServiceUrl ="http://"+ip+":8081";
 export const storyServiceUrl = "http://"+ip+":8081";

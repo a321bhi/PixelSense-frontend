@@ -1,10 +1,14 @@
 import axios from "axios";
 import {  useRef,useState,useContext } from "react";
 import UserContext from "../Contexts/UserContext";
-import { baseUrl, userServiceUrl } from "../../ConfigFiles/Urls";
+import { userServiceUrl } from "../../ConfigFiles/Urls";
 import { toast } from 'react-toastify';
 import ThemeContext from "../Contexts/ThemeContext";
 function UploadMediaModal(props){
+  let allowedFileTypes=["image/jpeg","image/png"];
+    let allowedFileSizeInMB = 50;
+    let allowedFileSizeInBytes = allowedFileSizeInMB*1024*1024;
+    
   let themeCtx = useContext(ThemeContext);
   const tagsRef = useRef(null);
   const [tagsState,setTagsState] = useState([]);
@@ -13,9 +17,36 @@ function UploadMediaModal(props){
   const formHandle = useRef();
   const captionHandle = useRef()
   let [selectedFile, changeSelectedFile ] = useState(null);
-  function onFileChange(event){
-        changeSelectedFile(event.target.files[0]);
-    };
+  function onFileChange(e){
+      if(!(allowedFileTypes.includes(e.target.files[0].type))){
+          e.target.files[0].value="";
+          toast.error("Please select only PNG/JPEG", {
+              position: "top-center",
+              autoClose: 2500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              progress: undefined,
+              pauseOnFocusLoss:false
+              });
+      }else if(e.target.files[0].size>allowedFileSizeInBytes){
+          e.target.files[0].value="";
+          toast.error("File size shouldn't exceed 50MB", {
+              position: "top-center",
+              autoClose: 2500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              progress: undefined,
+              pauseOnFocusLoss:false
+              });
+      }else{
+          // setCurrentFile(e.target.files[0]);
+          changeSelectedFile(e.target.files[0]);
+      }
+  };
     
   function uploadMedia(event){
     event.preventDefault();
